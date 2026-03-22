@@ -102,9 +102,9 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 
 ### Implementation for User Story 2
 
-- [ ] T033 [US2] Implement `web/hooks/useDeposit.ts` (allowance check → approve if needed → `deposit`; tx lifecycle; CONTRACT decode hint on revert)
-- [ ] T034 [US2] Implement `web/app/components/DepositForm.tsx` (amount input, USDC balance display, approve+deposit CTAs with `TransactionStatus`)
-- [ ] T035 [US2] Wire `DepositForm` into `ObjectiveCard` or dashboard modal
+- [x] T033 [US2] Implement `web/hooks/useDeposit.ts` (allowance check → approve if needed → `deposit`; tx lifecycle; CONTRACT decode hint on revert)
+- [x] T034 [US2] Implement `web/app/components/DepositForm.tsx` (amount input, USDC balance display, approve+deposit CTAs with `TransactionStatus`)
+- [x] T035 [US2] Wire `DepositForm` into `ObjectiveCard` or dashboard modal
 
 **Checkpoint**: US2 testable without padrinho acceptance flows
 
@@ -122,8 +122,8 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 
 ### Implementation for User Story 3
 
-- [ ] T037 [US3] Implement `web/hooks/useWithdrawalRequest.ts` with `withdrawGoal` (calls vault `withdrawGoal`)
-- [ ] T038 [US3] Expose "Withdraw all" CTA on `ObjectiveCard` when `balance >= targetAmount`; show "Goal reached — full withdrawal available" copy; mark card read-only when `completed`
+- [x] T037 [US3] Implement `web/hooks/useWithdrawalRequest.ts` with `withdrawGoal` (calls vault `withdrawGoal`)
+- [x] T038 [US3] Expose "Withdraw all" CTA on `ObjectiveCard` when `balance >= targetAmount`; show "Goal reached — full withdrawal available" copy; mark card read-only when `completed`
 
 **Checkpoint**: US1–US3 form vertical MVP slice for afilhado solo journey
 
@@ -141,9 +141,9 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 
 ### Implementation for User Story 4
 
-- [ ] T040 [US4] Implement `web/hooks/usePadrinhoActions.ts` with `acceptInvite`; decline is UI-only (afilhado can cancel invite via `cancelInvite`)
-- [ ] T041 [US4] Implement `web/app/components/InviteCard.tsx` (accept CTA, objective summary, `TransactionStatus`)
-- [ ] T042 [US4] Implement `web/hooks/usePadrinhoDashboard.ts` and wire padrinho section in `web/app/dashboard/page.tsx`
+- [x] T040 [US4] Implement `web/hooks/usePadrinhoActions.ts` with `acceptInvite`; decline is UI-only (afilhado can cancel invite via `cancelInvite`)
+- [x] T041 [US4] Implement `web/app/components/InviteCard.tsx` (accept CTA, objective summary, `TransactionStatus`)
+- [x] T042 [US4] Implement `web/hooks/usePadrinhoDashboard.ts` and wire padrinho section in `web/app/dashboard/page.tsx`
 
 **Checkpoint**: Invite lifecycle visible to both roles
 
@@ -161,7 +161,7 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 
 ### Implementation for User Story 5
 
-- [ ] T044 [US5] Extend `web/hooks/useWithdrawalRequest.ts` with `requestWithdrawal(amount, message)`
+- [x] T044 [US5] Extend `web/hooks/useWithdrawalRequest.ts` with `requestWithdrawal(amount, message)`
 - [ ] T045 [US5] Implement `web/app/components/WithdrawalRequestForm.tsx`
 - [ ] T046 [US5] Wire request CTA from afilhado `ObjectiveCard` when padrinho active and below goal
 
@@ -181,7 +181,7 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 
 ### Implementation for User Story 6
 
-- [ ] T048 [US6] Extend `web/hooks/usePadrinhoActions.ts` with `approveWithdrawal` and `denyWithdrawal`
+- [x] T048 [US6] Extend `web/hooks/usePadrinhoActions.ts` with `approveWithdrawal` and `denyWithdrawal`
 - [ ] T049 [US6] Implement `web/app/components/WithdrawalRequestCard.tsx` (amount, afilhado message, approve/deny, reply field)
 - [ ] T050 [US6] Render pending requests on padrinho dashboard; show request history on afilhado `ObjectiveCard`
 
@@ -221,10 +221,10 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 | Setup | T001–T005 | 5 | 4 done; T005 open |
 | Foundational | T006–T023 | 18 | 17 done; T014 removed |
 | US1 | T024–T031 | 8 | 7 done; T024 open (Vitest) |
-| US2 | T032–T035 | 4 | 0 |
-| US3 | T036–T038 | 3 | 0 |
-| US4 | T039–T042 | 4 | 0 |
-| US5 | T043–T046 | 4 | 0 |
-| US6 | T047–T050 | 4 | 0 |
+| US2 | T032–T035 | 4 | 3 done; T032 open (Vitest) |
+| US3 | T036–T038 | 3 | 2 done; T036 open (Vitest) |
+| US4 | T039–T042 | 4 | 3 done; T039 open (Vitest) |
+| US5 | T043–T046 | 4 | 1 done; T043/T045/T046 open |
+| US6 | T047–T050 | 4 | 1 done; T047/T049/T050 open |
 | Polish | T051–T061 | 11 | 0 |
-| **Total** | **T001–T061** | **60** | **28 done** |
+| **Total** | **T001–T061** | **60** | **38 done** |
