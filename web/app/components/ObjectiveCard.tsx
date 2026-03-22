@@ -6,7 +6,7 @@ import { PadrinhoStatus, VaultStatus } from "@/hooks/useObjective";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
 import { DepositForm } from "@/app/components/DepositForm";
 import { WithdrawalRequestForm } from "@/app/components/WithdrawalRequestForm";
-// import { WithdrawalHistory } from "@/app/components/WithdrawalHistory";
+import { CompletionMoment } from "@/app/components/CompletionMoment";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
 // -----------------------------------------------------------------------
@@ -67,6 +67,11 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
     if (wdStatus === "confirmed") onRefresh?.();
   }, [wdStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Completed objectives render the Completion Moment screen instead of the normal card
+  if (isCompleted) {
+    return <CompletionMoment objective={objective} />;
+  }
+
   return (
     <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
       {/* Header */}
@@ -78,11 +83,6 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
-          {isCompleted && (
-            <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-              Completed
-            </span>
-          )}
           {goalReached && (
             <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
               Goal reached
@@ -201,10 +201,6 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
         </div>
       )}
 
-      {/* Withdrawal history — always visible, lazy-loaded on expand */}
-      <div className="mt-4">
-        {/* <WithdrawalHistory vaultAddress={objective.address} /> */}
-      </div>
     </div>
   );
 }

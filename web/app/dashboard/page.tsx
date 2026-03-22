@@ -164,8 +164,42 @@ function SkeletonList({ count }: { count: number }) {
   return (
     <ul className="space-y-4" aria-busy="true">
       {Array.from({ length: count }).map((_, i) => (
-        <li key={i} className="h-36 animate-pulse rounded-2xl bg-foreground/5" />
+        <li key={i}>
+          <ObjectiveCardSkeleton />
+        </li>
       ))}
     </ul>
+  );
+}
+
+function ObjectiveCardSkeleton() {
+  return (
+    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
+      {/* Header */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="space-y-1.5">
+          <div className="h-4 w-40 animate-pulse rounded bg-foreground/20" />
+          <div className="h-3 w-28 animate-pulse rounded bg-foreground/20" />
+        </div>
+      </div>
+
+      {/* Balance row */}
+      <div className="mt-4 flex items-baseline gap-2">
+        <div className="h-7 w-28 animate-pulse rounded-lg bg-foreground/20" />
+        <div className="h-4 w-20 animate-pulse rounded bg-foreground/20" />
+      </div>
+
+      {/* Progress bar */}
+      <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-foreground/20" />
+      <div className="mt-1 flex justify-end">
+        <div className="h-3 w-8 animate-pulse rounded bg-foreground/20" />
+      </div>
+
+      {/* Action buttons */}
+      <div className="mt-4 flex gap-2">
+        <div className="h-9 flex-1 animate-pulse rounded-lg bg-foreground/20" />
+        <div className="h-9 flex-1 animate-pulse rounded-lg bg-foreground/20" />
+      </div>
+    </div>
   );
 }

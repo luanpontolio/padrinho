@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { usePublicClient } from "wagmi";
-import { parseAbiItem } from "viem";
+import { decodeEventLog } from "viem";
 import { MONAD_TESTNET_ID } from "@/lib/contracts";
+import { getLogsChunked } from "@/lib/getLogsChunked";
+import {
+  EV_WITHDRAWAL_REQUESTED,
+  EV_WITHDRAWAL_APPROVED,
+  EV_WITHDRAWAL_DENIED,
+} from "@/lib/vaultEvents";
 
 // -----------------------------------------------------------------------
 // Types
@@ -13,27 +19,13 @@ export interface WithdrawalHistoryEntry {
   txHash: `0x${string}`;
   blockNumber: bigint;
   amount: bigint;
-  /** Message from the afilhado */
   message: string;
-  /** Reply from the padrinho */
   responseMessage: string;
   outcome: "approved" | "denied" | "pending";
 }
 
 // -----------------------------------------------------------------------
-// Event ABIs (inline — avoids importing the giant JSON ABI)
-// -----------------------------------------------------------------------
-
-const EV_REQUESTED = parseAbiItem(
-  "event WithdrawalRequested(uint256 amount, string message)",
-);
-const EV_APPROVED = parseAbiItem(
-  "event WithdrawalApproved(uint256 amount, string responseMessage)",
-);
-const EV_DENIED = parseAbiItem("event WithdrawalDenied(string responseMessage)");
-
-// -----------------------------------------------------------------------
-// Hook
+// Hook — lazy: only fetches when enabled (accordion open)
 // -----------------------------------------------------------------------
 
 export function useWithdrawalHistory(vaultAddress: `0x${string}` | undefined) {
@@ -48,46 +40,61 @@ export function useWithdrawalHistory(vaultAddress: `0x${string}` | undefined) {
     async function fetchLogs() {
       setIsLoading(true);
       try {
-        // Fetch all three event types sequentially to stay within rate limits
-        const requestedLogs = await client!.getLogs({
-          address: vaultAddress,
-          event: EV_REQUESTED,
-          fromBlock: 0n,
-        });
-
-        const approvedLogs = await client!.getLogs({
-          address: vaultAddress,
-          event: EV_APPROVED,
-          fromBlock: 0n,
-        });
-
-        const deniedLogs = await client!.getLogs({
-          address: vaultAddress,
-          event: EV_DENIED,
-          fromBlock: 0n,
-        });
-
+        const logs = await getLogsChunked(client!, vaultAddress!);
         if (cancelled) return;
 
-        // Sort each list ascending by block
-        const requests = [...requestedLogs].sort(
-          (a, b) => Number(a.blockNumber - b.blockNumber),
-        );
-        const approvals = [...approvedLogs].sort(
-          (a, b) => Number(a.blockNumber - b.blockNumber),
-        );
-        const denials = [...deniedLogs].sort(
-          (a, b) => Number(a.blockNumber - b.blockNumber),
-        );
+        // Separate and sort each type by block number
+        type Requested = { blockNumber: bigint; txHash: string; amount: bigint; message: string };
+        type Resolved = { blockNumber: bigint; responseMessage: string; amount?: bigint };
 
-        // Correlate: each request is resolved by the first approval or denial
-        // that comes after it (contract enforces one pending request at a time).
+        const requests: Requested[] = [];
+        const approvals: Resolved[] = [];
+        const denials: Resolved[] = [];
+
+        for (const log of logs) {
+          try {
+            try {
+              const d = decodeEventLog({ abi: [EV_WITHDRAWAL_REQUESTED], ...log });
+              const args = d.args as { amount: bigint; message: string };
+              requests.push({
+                blockNumber: log.blockNumber ?? 0n,
+                txHash: log.transactionHash as string,
+                amount: args.amount,
+                message: args.message ?? "",
+              });
+              continue;
+            } catch { /* not this event */ }
+
+            try {
+              const d = decodeEventLog({ abi: [EV_WITHDRAWAL_APPROVED], ...log });
+              const args = d.args as { amount: bigint; responseMessage: string };
+              approvals.push({
+                blockNumber: log.blockNumber ?? 0n,
+                responseMessage: args.responseMessage ?? "",
+                amount: args.amount,
+              });
+              continue;
+            } catch { /* not this event */ }
+
+            try {
+              const d = decodeEventLog({ abi: [EV_WITHDRAWAL_DENIED], ...log });
+              const args = d.args as { responseMessage: string };
+              denials.push({
+                blockNumber: log.blockNumber ?? 0n,
+                responseMessage: args.responseMessage ?? "",
+              });
+            } catch { /* not this event */ }
+          } catch { /* skip */ }
+        }
+
+        requests.sort((a, b) => Number(a.blockNumber - b.blockNumber));
+        approvals.sort((a, b) => Number(a.blockNumber - b.blockNumber));
+        denials.sort((a, b) => Number(a.blockNumber - b.blockNumber));
+
         const usedApprovals = new Set<number>();
         const usedDenials = new Set<number>();
 
         const entries: WithdrawalHistoryEntry[] = requests.map((req) => {
-          const args = req.args as { amount: bigint; message: string };
-
           const approvalIdx = approvals.findIndex(
             (l, idx) => !usedApprovals.has(idx) && l.blockNumber > req.blockNumber,
           );
@@ -104,39 +111,34 @@ export function useWithdrawalHistory(vaultAddress: `0x${string}` | undefined) {
           if (approval && denial) {
             if (approval.blockNumber <= denial.blockNumber) {
               outcome = "approved";
-              responseMessage = (approval.args as { responseMessage: string })
-                .responseMessage;
+              responseMessage = approval.responseMessage;
               usedApprovals.add(approvalIdx);
             } else {
               outcome = "denied";
-              responseMessage = (denial.args as { responseMessage: string })
-                .responseMessage;
+              responseMessage = denial.responseMessage;
               usedDenials.add(denialIdx);
             }
           } else if (approval) {
             outcome = "approved";
-            responseMessage = (approval.args as { responseMessage: string })
-              .responseMessage;
+            responseMessage = approval.responseMessage;
             usedApprovals.add(approvalIdx);
           } else if (denial) {
             outcome = "denied";
-            responseMessage = (denial.args as { responseMessage: string })
-              .responseMessage;
+            responseMessage = denial.responseMessage;
             usedDenials.add(denialIdx);
           }
 
           return {
-            txHash: req.transactionHash as `0x${string}`,
+            txHash: req.txHash as `0x${string}`,
             blockNumber: req.blockNumber,
-            amount: args.amount,
-            message: args.message ?? "",
+            amount: req.amount,
+            message: req.message,
             responseMessage,
             outcome,
           };
         });
 
-        // Most recent first
-        setHistory(entries.reverse());
+        setHistory(entries.reverse()); // most recent first
       } catch (err) {
         console.error("useWithdrawalHistory:", err);
       } finally {
@@ -145,9 +147,7 @@ export function useWithdrawalHistory(vaultAddress: `0x${string}` | undefined) {
     }
 
     fetchLogs();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [vaultAddress, client]);
 
   return { history, isLoading };
