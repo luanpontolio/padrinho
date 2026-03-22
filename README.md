@@ -22,6 +22,10 @@ Foundry consists of:
 
 https://book.getfoundry.sh/
 
+### SpecKit / project principles
+
+Planning and reviews align with [`.specify/memory/constitution.md`](.specify/memory/constitution.md) (code quality, testing, UX consistency, and performance).
+
 ## Usage
 
 ### Build

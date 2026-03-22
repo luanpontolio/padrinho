@@ -100,6 +100,13 @@
 - **[Entity 1]**: [What it represents, key attributes without implementation]
 - **[Entity 2]**: [What it represents, relationships to other entities]
 
+### Non-Functional Requirements *(constitution: UX consistency & performance)*
+
+- **NFR-001 (UX)**: User-visible copy, errors, and primary flows MUST align with product terminology and error taxonomy; state impact and next steps where failures occur.
+- **NFR-002 (UX)**: If the feature includes UI, interactions MUST reuse established patterns/components unless a design exception is recorded.
+- **NFR-003 (Performance)**: Feature MUST define measurable targets (e.g. time-to-complete flow, p95 latency, gas per tx, max RPC calls) in the companion plan, not only prose here.
+- **NFR-004 (Performance)**: Degradation scenarios (load, large inputs, chain congestion) MUST be described with expected behavior or limits.
+
 ## Success Criteria *(mandatory)*
 
 <!--

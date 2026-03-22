@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify against `.specify/memory/constitution.md` (Padrinho Constitution):
+
+- **Code Quality**: Formatter/build gates identified; scope justified; public surfaces documented as needed.
+- **Testing Standards**: Test levels chosen (unit / Forge / fuzz) match risk; deterministic tests; defect fixes include regressions.
+- **User Experience Consistency**: Terminology, errors, and flows consistent across surfaces; UI reuse or sign-off noted if applicable.
+- **Performance**: Measurable targets and measurement method stated (latency, gas, RPC, memory, etc.); threshold regressions addressed or waived in Complexity Tracking.
+- **Technology & Security**: Dependency and secret-handling risks acknowledged; Foundry CI targets satisfied unless emergency waiver documented.
 
 ## Project Structure
 
