@@ -117,7 +117,7 @@ export function InviteCard({ objective, onAccepted }: InviteCardProps) {
             Pending withdrawal request: ${formatUsdc(objective.withdrawalRequest.amount)}
           </p>
           {objective.withdrawalRequest.message && (
-            <p className="mt-1 text-xs text-yellow-700">"{objective.withdrawalRequest.message}"</p>
+            <p className="mt-1 text-xs text-yellow-700">&ldquo;{objective.withdrawalRequest.message}&rdquo;</p>
           )}
         </div>
       )}
