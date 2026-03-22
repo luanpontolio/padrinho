@@ -30,6 +30,24 @@ When a goal is reached, the product doesn't just say congratulations. It shows e
 **8. The product works without a padrinho.**
 Solo mode is a real mode, not a degraded mode. The behavioral principles apply equally — the mirror still works, the journey is still tracked. The padrinho adds accountability. The product adds awareness.
 
+**9. Withdrawal messages are letters, not verdicts.**
+The optional text on an early withdrawal **request** and the padrinho’s **response** are **correspondence**: things that might be said in person, **worth documenting for history**. They are not bureaucratic justifications, evidence of wrongdoing, or verdicts. The UI treats them as readable, spaced **letters** in an archive — weight and presence without shame.
+
+**10. Early withdrawal is a detour, not a theft narrative.**
+Requesting early exit is **allowed** and **witnessed**, never framed as sneaking, breaking, or punishment. Avoid copy that evokes smashing a piggy bank, stealing from yourself, or “getting caught.” The emotional model is **pause → exchange → resume** (or exit if approved), not crime or failure.
+
+---
+
+## Visual & narrative metaphor (for design and marketing)
+
+These ideas align UI, brand, and campaigns without mandating a literal mascot:
+
+- **Witnessed path** — Savings follow a **line**: progress over time, **registered** onchain. The product is where intent meets a **record** others can see when invited.
+- **Fill, not a piggy bank** — Borrow **cultural shorthand**: empty **toward** full, satisfaction at **completion**, the “count it at the end” reveal. Do **not** rely on a literal piggy bank or on **breaking / smashing** imagery (that contradicts principles 9–10).
+- **Detours** — Early withdrawal requests are **small bends** off the main path: **okay**, witnessed by the padrinho, then the path **continues** or exits by agreement. Not chitty, not secret.
+- **Completion = closure** — The journey reads as **open** while the objective is active; **goal reached** is a **whole** state (fullness, closed chapter), not an endless braid with no finish.
+- **North star (internal)** — *Fullness you can trace* — accumulation you can **see**, history you can **read**, completion that feels **earned**.
+
 ---
 
 ## Behavioral Mechanisms
@@ -70,8 +88,8 @@ The goal reached screen is the most important screen in the product. It must sho
 - Number of deposits made
 - Number of early withdrawal requests submitted
 - Number of requests denied by the padrinho
-- The user’s own words on early withdrawal requests (the journey in text)
+- The **correspondence** on early withdrawals: the afilhado’s words and the padrinho’s responses, as **letters in the record** (the journey in text)
 - Most common guilty reason category (post–v0; requires AI categorization)
-- A message from the padrinho, if they choose to leave one
+- A closing **letter** from the padrinho, if they choose to leave one (optional message at completion)
 
-The celebration is earned by the journey being visible. Without the journey, it is just a number.
+The celebration is earned by the journey being visible — including the documented exchanges that only exist because Padrinho held them. Without the journey, it is just a number.
