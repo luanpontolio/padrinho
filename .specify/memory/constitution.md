@@ -1,10 +1,11 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 2.0.0 (major rewrite for monorepo stack)
-- Modified principles: All four core principles rewritten for Solidity + Next.js monorepo
-- Added sections: Technology & Security Baseline updated for EVM/Monad + Next.js; Quality Gates updated for dual-stack
-- Removed sections: Generic placeholders
-- Templates: .specify/templates/plan-template.md ✅ | spec-template.md ✅ | tasks-template.md ✅
+- Version change: 2.0.1 → 2.0.2 (MVP defaults to wagmi+viem; Web3 stack row)
+- Modified: Technology & Security Baseline — Stack table (Web3 provider row prioritizes wagmi + viem)
+- Modified principles: none (III unchanged; SDK waiver remains for non-wagmi stacks)
+- Added sections: none
+- Removed sections: none
+- Templates: none
 - Follow-up TODOs: none
 -->
 
@@ -59,7 +60,7 @@ Sync Impact Report
   - `NETWORK` — RPC failure, chain congestion (recoverable by retry).
   - `CONTRACT` — revert with a known reason string (show the decoded reason); unknown reverts show a safe fallback with a support link.
 - **Loading states**: Every async operation (wallet connection, contract read, contract write) MUST show a loading indicator within 200 ms of initiation; skeleton screens are preferred over spinners for data-heavy views.
-- **Responsive layout**: All primary flows MUST be fully usable on mobile (375 px width minimum); wallet flows must support WalletConnect in addition to injected providers.
+- **Responsive layout**: All primary flows MUST be fully usable on mobile (375 px width minimum). **Wallet connectivity**: When the app wires wallets **directly** with wagmi/viem, flows MUST support **both** WalletConnect and browser-injected providers. When the MVP uses a **single** third-party embedded-wallet or auth SDK (e.g. `@getpara/react-sdk`) as the only connection and signing layer, that choice MUST be recorded in the feature plan’s **Complexity Tracking** with SDK name and version, confirmation that mobile and desktop flows remain viable through that SDK, and a **follow-up issue or milestone** to reassess WalletConnect/injected parity before mainnet (or by an explicit date).
 - **Rationale**: Web3 UX is uniquely hostile — users lose real value when they misunderstand state. Consistency and clear feedback reduce errors, support costs, and trust erosion.
 
 ## Technology & Security Baseline
@@ -73,7 +74,7 @@ Sync Impact Report
 | Target chain | Monad Testnet (chain 10143) | — |
 | Frontend | Next.js + TypeScript | Next.js 14+ / TS 5+ |
 | Styling | Tailwind CSS | v3+ |
-| Web3 provider | wagmi + viem | latest stable |
+| Web3 provider | **wagmi + viem** (WalletConnect + injected connectors). Alternative: viem + embedded-wallet/auth SDK only with **Complexity Tracking** waiver | latest stable |
 | Package manager | pnpm workspaces | v8+ |
 
 ### Security Rules
@@ -102,4 +103,4 @@ Sync Impact Report
 - **Versioning**: MAJOR — removed or incompatible redefinition of principles; MINOR — new principle or materially expanded guidance; PATCH — clarifications and non-semantic edits.
 - Compliance is enforced at plan time (Constitution Check in plan.md) and in code review; waivers MUST be captured in Complexity Tracking with rationale, owner, and expiry or follow-up issue.
 
-**Version**: 2.0.0 | **Ratified**: 2026-03-22 | **Last Amended**: 2026-03-22
+**Version**: 2.0.2 | **Ratified**: 2026-03-22 | **Last Amended**: 2026-03-22

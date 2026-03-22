@@ -22,7 +22,7 @@
 
 ### User Story 1 - Afilhado Creates a Savings Objective (Priority: P1)
 
-The afilhado connects their wallet (Para), fills in the objective name and target amount, and saves. The system deploys a dedicated ERC-4626 vault for that objective. Optionally, the afilhado provides a wallet address to invite a padrinho. After completing the flow, the objective appears on the afilhado dashboard ready to receive deposits.
+The afilhado connects their wallet (browser extension or WalletConnect), fills in the objective name and target amount, and saves. The system deploys a dedicated ERC-4626 vault for that objective. Optionally, the afilhado provides a wallet address to invite a padrinho. After completing the flow, the objective appears on the afilhado dashboard ready to receive deposits.
 
 **Why this priority**: This is the core of the product. Without creating an objective there is no vault, no padrinho, and no savings. Every other story depends on this flow.
 

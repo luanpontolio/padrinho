@@ -182,7 +182,7 @@ Most people don't need better financial tools. They need a first step they can a
 - **Chain:** Monad Testnet
 - **Contract language:** Solidity
 - **Stablecoin:** USDC (native on Monad)
-- **Authentication:** Para wallet
+- **Authentication:** WalletConnect + injected browser wallet (wagmi)
 - **Onramp:** Transak or Moonpay (PIX → USDC on Monad)
 - **Frontend:** Web-first, mobile-responsive
 - **Public view:** Shareable, read-only objective page; anyone can see progress without connecting a wallet
