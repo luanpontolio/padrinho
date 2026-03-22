@@ -41,7 +41,9 @@ And if you can't do it alone, Padrinho gives you something more: the ability to 
 
 That person is your padrinho.
 
-You deposit freely. You watch your balance grow toward your goal. But if you want to withdraw before you get there, you have to ask your padrinho. They can approve it or deny it, and they can tell you why.
+Solo mode means no active padrinho: there is no gatekeeper on early withdrawal, and the contract encodes that the same way—see §7.
+
+You deposit freely. You watch your balance grow toward your goal. With an active padrinho, if you want to withdraw before you get there, you have to ask them. They can approve it or deny it, and they can tell you why.
 
 When you reach your goal, the money is yours automatically, without asking anyone.
 
@@ -65,7 +67,7 @@ Padrinho works as a solo tool. It works even better with someone in your corner.
 2. The afilhado invites a padrinho by sharing a link or wallet address.
 3. The afilhado deposits any amount at any time. There is no required schedule.
 4. Both parties can see the current balance and progress toward the goal at any time via a public view. No wallet required to read it.
-5. If the afilhado wants to withdraw before reaching the goal, they submit a withdrawal request with an optional message to their padrinho.
+5. If the afilhado wants to withdraw before reaching the goal and an active padrinho is in place, they submit a withdrawal request with an optional message to their padrinho. With no active padrinho, they withdraw freely (see §7).
 6. The padrinho receives the request, reviews it, and responds with an approval or denial and a message back.
 7. If approved, the withdrawal is processed. If denied, the funds remain locked.
 8. When the balance reaches the target amount, the full balance becomes available to the afilhado automatically. No padrinho approval needed.
@@ -132,7 +134,6 @@ The following rules define the system in plain language. These are the rules fro
 - The padrinho receives the request and responds with approval or denial and an optional message.
 - If approved, the specified amount is transferred to the afilhado.
 - If denied, the funds remain in the contract.
-- Pending requests expire after 72 hours if not responded to and are treated as denied.
 
 **Padrinho constraints**
 - The padrinho cannot initiate any transfer of funds.
@@ -178,13 +179,13 @@ Most people don't need better financial tools. They need a first step they can a
 
 ## 10. Technical Stack (Reference)
 
-- **Chain:** Monad Mainnet
+- **Chain:** Monad Testnet
 - **Contract language:** Solidity
 - **Stablecoin:** USDC (native on Monad)
-- **Authentication:** Social login via Privy, Dynamic, or Particle Network smart account created automatically, no seed phrase exposed to the user
+- **Authentication:** Para wallet
 - **Onramp:** Transak or Moonpay (PIX → USDC on Monad)
 - **Frontend:** Web-first, mobile-responsive
-- **Public view:** Read-only objective page accessible without wallet shareable link for the afilhado to show progress
+- **Public view:** Shareable, read-only objective page; anyone can see progress without connecting a wallet
 
 ---
 
