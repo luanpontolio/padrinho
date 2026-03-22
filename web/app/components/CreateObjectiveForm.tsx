@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { useCreateObjective } from "@/hooks/useCreateObjective";
@@ -52,10 +52,9 @@ export function CreateObjectiveForm({ onConfirmed }: CreateObjectiveFormProps) {
   const [targetError, setTargetError] = useState("");
   const [padrinhoError, setPadrinhoError] = useState("");
 
-  // React to confirmation
-  if (status === "confirmed" && onConfirmed) {
-    onConfirmed();
-  }
+  // useEffect(() => {
+  //   if (status === "confirmed") onConfirmed?.();
+  // }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // -----------------------------------------------------------------------
   // Handlers

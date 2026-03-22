@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import type { ObjectiveData } from "@/hooks/useObjective";
 import { PadrinhoStatus } from "@/hooks/useObjective";
 import { usePadrinhoActions } from "@/hooks/usePadrinhoActions";
@@ -44,9 +45,9 @@ export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProp
   const isActive = objective.padrinhoStatus === PadrinhoStatus.Active;
   const hasRequest = isActive && objective.withdrawalRequest.exists;
 
-  if (status === "confirmed" && onAccepted) {
-    onAccepted();
-  }
+  useEffect(() => {
+    if (status === "confirmed") onAccepted?.();
+  }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm space-y-4">

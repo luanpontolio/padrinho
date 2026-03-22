@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDeposit } from "@/hooks/useDeposit";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
@@ -47,9 +47,9 @@ export function DepositForm({ vaultAddress, onSuccess }: DepositFormProps) {
   const [input, setInput] = useState("");
   const [inputError, setInputError] = useState("");
 
-  if (status === "confirmed" && onSuccess) {
-    onSuccess();
-  }
+  useEffect(() => {
+    if (status === "confirmed") onSuccess?.();
+  }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isActive = step !== "idle" && step !== "done" && step !== "failed";
 

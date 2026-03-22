@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ObjectiveData } from "@/hooks/useObjective";
 import { usePadrinhoActions } from "@/hooks/usePadrinhoActions";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
@@ -49,9 +49,9 @@ export function WithdrawalRequestCard({ objective, onResolved }: WithdrawalReque
 
   const req = objective.withdrawalRequest;
 
-  if (status === "confirmed" && onResolved) {
-    onResolved();
-  }
+  useEffect(() => {
+    if (status === "confirmed") onResolved?.();
+  }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isBusy = status === "signing" || status === "submitted";
 

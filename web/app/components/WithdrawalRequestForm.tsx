@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
@@ -54,9 +54,9 @@ export function WithdrawalRequestForm({
   const [message, setMessage] = useState("");
   const [amountError, setAmountError] = useState("");
 
-  if (status === "confirmed" && onSuccess) {
-    onSuccess();
-  }
+  useEffect(() => {
+    if (status === "confirmed") onSuccess?.();
+  }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isBusy = status === "signing" || status === "submitted";
 

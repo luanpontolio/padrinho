@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ObjectiveData } from "@/hooks/useObjective";
 import { PadrinhoStatus, VaultStatus } from "@/hooks/useObjective";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
@@ -62,7 +62,9 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
   const { withdrawGoal, status: wdStatus, txHash: wdHash, error: wdError, reset: wdReset } =
     useWithdrawalRequest(objective.address);
 
-  if (wdStatus === "confirmed") onRefresh?.();
+  useEffect(() => {
+    if (wdStatus === "confirmed") onRefresh?.();
+  }, [wdStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
