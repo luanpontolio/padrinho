@@ -162,8 +162,8 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 ### Implementation for User Story 5
 
 - [x] T044 [US5] Extend `web/hooks/useWithdrawalRequest.ts` with `requestWithdrawal(amount, message)`
-- [ ] T045 [US5] Implement `web/app/components/WithdrawalRequestForm.tsx`
-- [ ] T046 [US5] Wire request CTA from afilhado `ObjectiveCard` when padrinho active and below goal
+- [x] T045 [US5] Implement `web/app/components/WithdrawalRequestForm.tsx`
+- [x] T046 [US5] Wire request CTA from afilhado `ObjectiveCard` when padrinho active and below goal
 
 **Checkpoint**: Request visible to padrinho
 
@@ -182,8 +182,8 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 ### Implementation for User Story 6
 
 - [x] T048 [US6] Extend `web/hooks/usePadrinhoActions.ts` with `approveWithdrawal` and `denyWithdrawal`
-- [ ] T049 [US6] Implement `web/app/components/WithdrawalRequestCard.tsx` (amount, afilhado message, approve/deny, reply field)
-- [ ] T050 [US6] Render pending requests on padrinho dashboard; show request history on afilhado `ObjectiveCard`
+- [x] T049 [US6] Implement `web/app/components/WithdrawalRequestCard.tsx` (amount, afilhado message, approve/deny, reply field)
+- [x] T050 [US6] Render pending requests on padrinho dashboard; show request history on afilhado `ObjectiveCard`
 
 **Checkpoint**: Full accountability loop in UI
 
@@ -194,9 +194,9 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 **Purpose**: Landing, public page, shared UI primitives, e2e, glossary, constitution checklist
 
 - [ ] T051 [P] Implement `web/app/components/ui/{Button,Input,Badge,ProgressBar,Skeleton}.tsx` and refactor existing components to use them
-- [ ] T052 Implement `web/app/page.tsx` landing with Privy login CTA and redirect to `/dashboard` when connected
-- [ ] T053 Complete `web/app/dashboard/page.tsx` role-aware behavior (afilhado / padrinho / both tabs / empty state)
-- [ ] T054 Implement `web/app/objective/[id]/page.tsx` public read-only view (no wallet; skeleton loaders; < 3s on 4G)
+- [x] T052 Implement `web/app/page.tsx` landing with Privy login CTA and redirect to `/dashboard` when connected
+- [x] T053 Complete `web/app/dashboard/page.tsx` role-aware behavior (afilhado / padrinho / both tabs / empty state)
+- [x] T054 Implement `web/app/objective/[id]/page.tsx` public read-only view (no wallet; skeleton loaders; < 3s on 4G)
 - [ ] T055 [P] Add Playwright spec `web/__tests__/e2e/solo-path.spec.ts`
 - [ ] T056 [P] Add Playwright spec `web/__tests__/e2e/accountability-path.spec.ts`
 - [ ] T057 [P] Add Playwright spec `web/__tests__/e2e/denial-path.spec.ts`
@@ -224,7 +224,7 @@ The `web/` package uses **no `src/` prefix**. Template: `next-serwist-privy-embe
 | US2 | T032–T035 | 4 | 3 done; T032 open (Vitest) |
 | US3 | T036–T038 | 3 | 2 done; T036 open (Vitest) |
 | US4 | T039–T042 | 4 | 3 done; T039 open (Vitest) |
-| US5 | T043–T046 | 4 | 1 done; T043/T045/T046 open |
-| US6 | T047–T050 | 4 | 1 done; T047/T049/T050 open |
-| Polish | T051–T061 | 11 | 0 |
-| **Total** | **T001–T061** | **60** | **38 done** |
+| US5 | T043–T046 | 4 | 3 done; T043 open (Vitest) |
+| US6 | T047–T050 | 4 | 3 done; T047 open (Vitest) |
+| Polish | T051–T061 | 11 | 3 done (T052–T054); T051/T055–T061 open |
+| **Total** | **T001–T061** | **60** | **47 done** |

@@ -3,6 +3,7 @@
 import type { ObjectiveData } from "@/hooks/useObjective";
 import { PadrinhoStatus } from "@/hooks/useObjective";
 import { usePadrinhoActions } from "@/hooks/usePadrinhoActions";
+import { WithdrawalRequestCard } from "@/app/components/WithdrawalRequestCard";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
 // -----------------------------------------------------------------------
@@ -27,30 +28,28 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
 }
 
 // -----------------------------------------------------------------------
-// Props
+// Component
 // -----------------------------------------------------------------------
 
 interface InviteCardProps {
   objective: ObjectiveData;
   onAccepted?: () => void;
+  onResolved?: () => void;
 }
 
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
-
-export function InviteCard({ objective, onAccepted }: InviteCardProps) {
+export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProps) {
   const { acceptInvite, status, txHash, error, reset } = usePadrinhoActions(objective.address);
 
   const isPending = objective.padrinhoStatus === PadrinhoStatus.Pending;
   const isActive = objective.padrinhoStatus === PadrinhoStatus.Active;
+  const hasRequest = isActive && objective.withdrawalRequest.exists;
 
   if (status === "confirmed" && onAccepted) {
     onAccepted();
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
+    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -59,21 +58,25 @@ export function InviteCard({ objective, onAccepted }: InviteCardProps) {
             Afilhado: {shortAddr(objective.afilhado)}
           </p>
         </div>
-
         {isPending && (
           <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
             Invite pending
           </span>
         )}
-        {isActive && (
+        {isActive && !hasRequest && (
           <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
             Active padrinho
+          </span>
+        )}
+        {hasRequest && (
+          <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
+            Action needed
           </span>
         )}
       </div>
 
       {/* Objective summary */}
-      <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-foreground/5 p-3 text-sm">
+      <div className="grid grid-cols-2 gap-2 rounded-lg bg-foreground/5 p-3 text-sm">
         <div>
           <p className="text-xs text-foreground/50">Balance</p>
           <p className="font-mono font-medium">${formatUsdc(objective.totalAssets)}</p>
@@ -86,7 +89,7 @@ export function InviteCard({ objective, onAccepted }: InviteCardProps) {
 
       {/* Accept CTA — only when pending */}
       {isPending && status !== "confirmed" && (
-        <div className="mt-4">
+        <div className="space-y-2">
           <button
             onClick={() => acceptInvite()}
             disabled={status === "signing" || status === "submitted"}
@@ -94,32 +97,23 @@ export function InviteCard({ objective, onAccepted }: InviteCardProps) {
           >
             Accept invitation
           </button>
-
           <TransactionStatus
             status={status}
             txHash={txHash}
             errorCategory={error ? errorCategory(error) : undefined}
             errorMessage={error}
           />
-
           {status === "failed" && (
-            <button onClick={reset} className="mt-2 text-xs text-foreground/50 underline hover:text-foreground">
+            <button onClick={reset} className="text-xs text-foreground/50 underline hover:text-foreground">
               Try again
             </button>
           )}
         </div>
       )}
 
-      {/* Withdrawal request badge — when active and there's a pending request */}
-      {isActive && objective.withdrawalRequest.exists && (
-        <div className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-          <p className="text-xs font-medium text-yellow-800">
-            Pending withdrawal request: ${formatUsdc(objective.withdrawalRequest.amount)}
-          </p>
-          {objective.withdrawalRequest.message && (
-            <p className="mt-1 text-xs text-yellow-700">&ldquo;{objective.withdrawalRequest.message}&rdquo;</p>
-          )}
-        </div>
+      {/* Withdrawal request card — padrinho action when request exists */}
+      {hasRequest && (
+        <WithdrawalRequestCard objective={objective} onResolved={onResolved} />
       )}
     </div>
   );

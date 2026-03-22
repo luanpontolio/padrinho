@@ -120,12 +120,12 @@ function PadrinhoSection() {
         <ul className="space-y-4">
           {pending.map((obj) => (
             <li key={obj.address}>
-              <InviteCard objective={obj} onAccepted={refetch} />
+              <InviteCard objective={obj} onAccepted={refetch} onResolved={refetch} />
             </li>
           ))}
           {active.map((obj) => (
             <li key={obj.address}>
-              <InviteCard objective={obj} />
+              <InviteCard objective={obj} onResolved={refetch} />
             </li>
           ))}
         </ul>

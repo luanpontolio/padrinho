@@ -5,6 +5,7 @@ import type { ObjectiveData } from "@/hooks/useObjective";
 import { PadrinhoStatus, VaultStatus } from "@/hooks/useObjective";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
 import { DepositForm } from "@/app/components/DepositForm";
+import { WithdrawalRequestForm } from "@/app/components/WithdrawalRequestForm";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
 // -----------------------------------------------------------------------
@@ -43,30 +44,25 @@ interface ObjectiveCardProps {
   onRefresh?: () => void;
 }
 
+type Panel = "none" | "deposit" | "request";
+
 export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
-  const { name, totalAssets, targetAmount, status, padrinhoStatus, padrinho, pendingPadrinho } = objective;
+  const { name, totalAssets, targetAmount, status, padrinhoStatus, padrinho, pendingPadrinho, withdrawalRequest } =
+    objective;
 
   const pct = progressPercent(totalAssets, targetAmount);
   const isCompleted = status === VaultStatus.Completed;
   const goalReached = !isCompleted && totalAssets >= targetAmount && targetAmount > 0n;
+  const hasPadrinho = padrinhoStatus === PadrinhoStatus.Active;
+  const belowGoal = !goalReached && !isCompleted;
+  const canRequestWithdrawal = hasPadrinho && belowGoal && !withdrawalRequest.exists;
 
-  const [showDeposit, setShowDeposit] = useState(false);
+  const [panel, setPanel] = useState<Panel>("none");
 
   const { withdrawGoal, status: wdStatus, txHash: wdHash, error: wdError, reset: wdReset } =
     useWithdrawalRequest(objective.address);
 
-  function handleDepositSuccess() {
-    setShowDeposit(false);
-    onRefresh?.();
-  }
-
-  function handleWithdrawGoal() {
-    withdrawGoal();
-  }
-
-  if (wdStatus === "confirmed") {
-    onRefresh?.();
-  }
+  if (wdStatus === "confirmed") onRefresh?.();
 
   return (
     <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
@@ -78,7 +74,6 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
             {padrinhoLabel(padrinhoStatus, padrinho, pendingPadrinho)}
           </p>
         </div>
-
         <div className="flex flex-col items-end gap-1">
           {isCompleted && (
             <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
@@ -112,17 +107,26 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
       </div>
       <p className="mt-1 text-right text-xs text-foreground/50">{pct}%</p>
 
+      {/* Pending withdrawal request status (afilhado view) */}
+      {withdrawalRequest.exists && !isCompleted && (
+        <div className="mt-3 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2">
+          <p className="text-xs font-medium text-yellow-800">
+            Withdrawal request pending — ${formatUsdc(withdrawalRequest.amount)}
+          </p>
+          <p className="mt-0.5 text-xs text-yellow-600">Waiting for padrinho response.</p>
+        </div>
+      )}
+
       {/* Actions — hidden when completed */}
       {!isCompleted && (
         <div className="mt-4 space-y-3">
-          {/* Goal reached — withdraw all */}
+
+          {/* Goal reached → withdraw all */}
           {goalReached && (
             <div className="space-y-2">
-              <p className="text-xs text-blue-700">
-                Goal reached — full withdrawal available.
-              </p>
+              <p className="text-xs text-blue-700">Goal reached — full withdrawal available.</p>
               <button
-                onClick={handleWithdrawGoal}
+                onClick={() => withdrawGoal()}
                 disabled={wdStatus === "signing" || wdStatus === "submitted" || wdStatus === "confirmed"}
                 className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-40"
               >
@@ -142,34 +146,54 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
             </div>
           )}
 
-          {/* Deposit toggle — hidden when goal already reached */}
-          {!goalReached && (
-            <>
-              {!showDeposit ? (
+          {/* Below goal actions */}
+          {belowGoal && !withdrawalRequest.exists && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPanel(panel === "deposit" ? "none" : "deposit")}
+                className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+              >
+                Deposit
+              </button>
+              {canRequestWithdrawal && (
                 <button
-                  onClick={() => setShowDeposit(true)}
-                  className="w-full rounded-lg border border-foreground/20 px-4 py-2 text-sm font-medium hover:bg-foreground/5"
+                  onClick={() => setPanel(panel === "request" ? "none" : "request")}
+                  className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
                 >
-                  Deposit
+                  Request withdrawal
                 </button>
-              ) : (
-                <div className="rounded-lg border border-foreground/10 p-3">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-xs font-medium">Deposit USDC</span>
-                    <button
-                      onClick={() => setShowDeposit(false)}
-                      className="text-xs text-foreground/40 hover:text-foreground"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                  <DepositForm
-                    vaultAddress={objective.address}
-                    onSuccess={handleDepositSuccess}
-                  />
-                </div>
               )}
-            </>
+            </div>
+          )}
+
+          {/* Deposit panel */}
+          {panel === "deposit" && (
+            <div className="rounded-lg border border-foreground/10 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-medium">Deposit USDC</span>
+                <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>
+              </div>
+              <DepositForm
+                vaultAddress={objective.address}
+                onSuccess={() => { setPanel("none"); onRefresh?.(); }}
+              />
+            </div>
+          )}
+
+          {/* Early withdrawal request panel */}
+          {panel === "request" && (
+            <div className="rounded-lg border border-foreground/10 p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-medium">Request early withdrawal</span>
+                <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>
+              </div>
+              <WithdrawalRequestForm
+                vaultAddress={objective.address}
+                maxAmount={totalAssets}
+                onSuccess={() => { setPanel("none"); onRefresh?.(); }}
+                onCancel={() => setPanel("none")}
+              />
+            </div>
           )}
         </div>
       )}
