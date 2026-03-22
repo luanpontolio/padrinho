@@ -50,7 +50,7 @@ export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProp
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm space-y-4">
+    <div className="rounded-2xl bg-foreground/[0.06] dark:bg-white/[0.08] p-5 space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -77,7 +77,7 @@ export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProp
       </div>
 
       {/* Objective summary */}
-      <div className="grid grid-cols-2 gap-2 rounded-lg bg-foreground/5 p-3 text-sm">
+      <div className="grid grid-cols-2 gap-2 rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] p-3 text-sm">
         <div>
           <p className="text-xs text-foreground/50">Balance</p>
           <p className="font-mono font-medium">${formatUsdc(objective.totalAssets)}</p>

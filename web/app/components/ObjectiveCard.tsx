@@ -73,7 +73,7 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
+    <div className="rounded-2xl bg-foreground/[0.06] dark:bg-white/[0.08] p-5">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
@@ -100,7 +100,7 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
       {/* Progress bar */}
       <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-foreground/10">
         <div
-          className="h-full rounded-full bg-foreground transition-all duration-300"
+          className={`h-full rounded-full transition-all duration-300 ${goalReached || isCompleted ? "bg-green-500" : "bg-blue-500"}`}
           style={{ width: `${pct}%` }}
           role="progressbar"
           aria-valuenow={pct}
@@ -154,14 +154,14 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
             <div className="flex gap-2">
               <button
                 onClick={() => setPanel(panel === "deposit" ? "none" : "deposit")}
-                className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+                className="flex-1 rounded-lg bg-foreground px-3 py-2 text-sm font-medium text-background hover:opacity-90"
               >
                 Deposit
               </button>
               {canRequestWithdrawal && (
                 <button
                   onClick={() => setPanel(panel === "request" ? "none" : "request")}
-                  className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+                  className="flex-1 rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] px-3 py-2 text-sm font-medium hover:bg-foreground/10"
                 >
                   Request withdrawal
                 </button>
@@ -171,7 +171,7 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
 
           {/* Deposit panel */}
           {panel === "deposit" && (
-            <div className="rounded-lg border border-foreground/10 p-3">
+            <div className="rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium">Deposit USDC</span>
                 <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>
@@ -185,7 +185,7 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
 
           {/* Early withdrawal request panel */}
           {panel === "request" && (
-            <div className="rounded-lg border border-foreground/10 p-3">
+            <div className="rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] p-3">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium">Request early withdrawal</span>
                 <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>

@@ -109,16 +109,22 @@ export function CreateObjectiveForm() {
 
   return (
     <div className="w-full max-w-md">
-      {/* Step indicator */}
-      <div className="mb-6 flex items-center gap-2 text-xs text-foreground/50">
-        <StepDot active={step === 1} done={step === 2} label="1" />
-        <div className="h-px flex-1 bg-foreground/10" />
-        <StepDot active={step === 2} done={false} label="2" />
+      {/* Back button */}
+      <div className="mb-8 h-5">
+        {step === 2 && (
+          <button
+            onClick={handleBack}
+            disabled={isSubmitting}
+            className="rounded-lg border border-foreground/20 px-3 py-1 text-xs font-medium text-foreground/60 hover:border-foreground/40 hover:text-foreground disabled:opacity-40"
+          >
+            ← Back
+          </button>
+        )}
       </div>
 
       {step === 1 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">New savings objective</h2>
+          <h2 className="text-xl font-bold">What are you saving for?</h2>
 
           <div>
             <label htmlFor="obj-name" className="mb-1 block text-sm font-medium">
@@ -130,7 +136,7 @@ export function CreateObjectiveForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Trip to Japan"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="w-full rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
             />
             {nameError && <p className="mt-1 text-xs text-red-600">{nameError}</p>}
           </div>
@@ -147,7 +153,7 @@ export function CreateObjectiveForm() {
               value={targetInput}
               onChange={(e) => setTargetInput(e.target.value)}
               placeholder="e.g. 1000"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="w-full rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
             />
             {targetError && <p className="mt-1 text-xs text-red-600">{targetError}</p>}
           </div>
@@ -163,9 +169,9 @@ export function CreateObjectiveForm() {
 
       {step === 2 && (
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Choose a padrinho (optional)</h2>
+          <h2 className="text-xl font-bold">Invite a padrinho</h2>
           <p className="text-sm text-foreground/60">
-            A padrinho can block early withdrawals below your goal. Leave blank to save solo.
+            Someone you trust who can weigh in if you want to exit early. Leave blank to save on your own.
           </p>
 
           <div>
@@ -178,27 +184,18 @@ export function CreateObjectiveForm() {
               value={padrinhoInput}
               onChange={(e) => setPadrinhoInput(e.target.value)}
               placeholder="0x… or leave blank for solo mode"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 font-mono text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="w-full rounded-lg bg-foreground/[0.06] dark:bg-white/[0.06] px-3 py-2 font-mono text-sm outline-none focus:ring-2 focus:ring-foreground/30"
             />
             {padrinhoError && <p className="mt-1 text-xs text-red-600">{padrinhoError}</p>}
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={handleBack}
-              disabled={isSubmitting}
-              className="flex-1 rounded-lg border border-foreground/20 px-4 py-2 text-sm font-medium hover:bg-foreground/5 disabled:opacity-40"
-            >
-              ← Back
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting || status === "confirmed"}
-              className="flex-1 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 active:opacity-80 disabled:opacity-40"
-            >
-              {padrinhoInput.trim() ? "Create with padrinho" : "Create (solo)"}
-            </button>
-          </div>
+          <button
+            onClick={handleSubmit}
+            disabled={isSubmitting || status === "confirmed"}
+            className="w-full rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 active:opacity-80 disabled:opacity-40"
+          >
+            {padrinhoInput.trim() ? "Create with padrinho" : "Create (solo)"}
+          </button>
 
           <TransactionStatus
             status={status}
@@ -213,21 +210,7 @@ export function CreateObjectiveForm() {
 }
 
 // -----------------------------------------------------------------------
-// Step indicator dot
+// Step indicator
 // -----------------------------------------------------------------------
 
-function StepDot({ active, done, label }: { active: boolean; done: boolean; label: string }) {
-  return (
-    <div
-      className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-        active
-          ? "bg-foreground text-background"
-          : done
-            ? "bg-green-500 text-white"
-            : "border border-foreground/20 text-foreground/40"
-      }`}
-    >
-      {done ? "✓" : label}
-    </div>
-  );
-}
+

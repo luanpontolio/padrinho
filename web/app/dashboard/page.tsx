@@ -6,6 +6,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useAfilhadoDashboard } from "@/hooks/useAfilhadoDashboard";
 import { usePadrinhoDashboard } from "@/hooks/usePadrinhoDashboard";
 import { PadrinhoStatus } from "@/hooks/useObjective";
+import { AppHeader } from "@/app/components/AppHeader";
 import { ObjectiveCard } from "@/app/components/ObjectiveCard";
 import { InviteCard } from "@/app/components/InviteCard";
 
@@ -14,49 +15,35 @@ import { InviteCard } from "@/app/components/InviteCard";
 // -----------------------------------------------------------------------
 
 export default function DashboardPage() {
-  const { ready, authenticated, login, logout } = usePrivy();
+  const { ready, authenticated } = usePrivy();
   const { address } = useAccount();
 
-  if (!ready) return <LoadingScreen />;
-
-  // Not logged in → show login CTA
-  if (!authenticated) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-        <h1 className="text-2xl font-bold">Padrinho</h1>
-        <p className="text-sm text-foreground/60">Connect your wallet to access your dashboard.</p>
-        <button
-          onClick={login}
-          className="rounded-lg bg-foreground px-6 py-2 text-sm font-medium text-background hover:opacity-90"
-        >
-          Connect wallet
-        </button>
-      </main>
-    );
-  }
-
-  // Authenticated but wagmi wallet not synced yet → wait
-  if (!address) return <LoadingScreen />;
-
-
   return (
-    <main className="mx-auto min-h-screen w-full max-w-lg px-4 py-10 space-y-10">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-foreground/50">
-          {address.slice(0, 6)}…{address.slice(-4)}
-        </span>
-        <button
-          onClick={() => logout()}
-          className="rounded-lg border border-foreground/20 px-3 py-1 text-xs font-medium text-foreground/60 hover:border-foreground/40 hover:text-foreground"
-        >
-          Disconnect
-        </button>
-      </div>
+    <div className="min-h-screen">
+      <AppHeader />
 
-      <AfilhadoSection />
-      <PadrinhoSection />
-    </main>
+      {/* Loading */}
+      {(!ready || (authenticated && !address)) && (
+        <div className="flex items-center justify-center py-32">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+        </div>
+      )}
+
+      {/* Not connected — header already has the connect button */}
+      {ready && !authenticated && (
+        <div className="flex flex-col items-center gap-2 py-32 text-center">
+          <p className="text-sm text-foreground/50">Connect your wallet to access your dashboard.</p>
+        </div>
+      )}
+
+      {/* Authenticated */}
+      {ready && authenticated && address && (
+        <main className="mx-auto w-full max-w-lg px-4 py-10 space-y-10">
+          <AfilhadoSection />
+          <PadrinhoSection />
+        </main>
+      )}
+    </div>
   );
 }
 
@@ -67,21 +54,25 @@ export default function DashboardPage() {
 function AfilhadoSection() {
   const { objectives, isLoading, refetch } = useAfilhadoDashboard();
 
+  const isEmpty = !isLoading && objectives.length === 0;
+
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold">My objectives</h2>
-        <Link
-          href="/objective/new"
-          className="rounded-lg bg-foreground px-4 py-1.5 text-sm font-medium text-background hover:opacity-90"
-        >
-          + New
-        </Link>
+        {!isEmpty && (
+          <Link
+            href="/objective/new"
+            className="rounded-lg bg-foreground px-4 py-1.5 text-sm font-medium text-background hover:opacity-90"
+          >
+            + New
+          </Link>
+        )}
       </div>
 
       {isLoading && <SkeletonList count={2} />}
 
-      {!isLoading && objectives.length === 0 && <EmptyState />}
+      {isEmpty && <EmptyState />}
 
       {!isLoading && objectives.length > 0 && (
         <ul className="space-y-4">
@@ -103,10 +94,8 @@ function AfilhadoSection() {
 function PadrinhoSection() {
   const { objectives, isLoading, refetch } = usePadrinhoDashboard();
 
-  // Hide section entirely if nothing to show and not loading
   if (!isLoading && objectives.length === 0) return null;
 
-  // Separate pending invites from active ones
   const pending = objectives.filter((o) => o.padrinhoStatus === PadrinhoStatus.Pending);
   const active = objectives.filter((o) => o.padrinhoStatus === PadrinhoStatus.Active);
 
@@ -140,23 +129,21 @@ function PadrinhoSection() {
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-foreground/20 py-16 text-center">
-      <p className="text-sm text-foreground/50">You have no savings objectives yet.</p>
+    <div className="flex flex-col items-center gap-6 rounded-2xl bg-foreground/[0.06] dark:bg-white/[0.08] px-8 py-16 text-center">
+      <div className="space-y-2">
+        <p className="text-lg font-bold">Set a savings goal</p>
+        <p className="max-w-xs text-sm leading-relaxed text-foreground/50">
+          Give it a name and a target amount. Deposit at your own pace and track progress toward it.
+          You can invite someone you trust to keep you accountable, or save on your own.
+        </p>
+      </div>
       <Link
         href="/objective/new"
-        className="rounded-lg bg-foreground px-5 py-2 text-sm font-medium text-background hover:opacity-90"
+        className="rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background hover:opacity-90"
       >
-        Create your first objective
+        Start your first objective
       </Link>
     </div>
-  );
-}
-
-function LoadingScreen() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
-    </main>
   );
 }
 
