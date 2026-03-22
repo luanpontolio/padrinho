@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { useCreateObjective } from "@/hooks/useCreateObjective";
@@ -10,10 +10,6 @@ import { TransactionStatus } from "@/app/components/TransactionStatus";
 // Types
 // -----------------------------------------------------------------------
 
-interface CreateObjectiveFormProps {
-  /** Called after the transaction is confirmed on-chain */
-  onConfirmed?: () => void;
-}
 
 // -----------------------------------------------------------------------
 // Helpers
@@ -35,7 +31,7 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
 // Component
 // -----------------------------------------------------------------------
 
-export function CreateObjectiveForm({ onConfirmed }: CreateObjectiveFormProps) {
+export function CreateObjectiveForm() {
   const { address } = useAccount();
   const { write, status, txHash, error, reset } = useCreateObjective();
 
@@ -51,10 +47,6 @@ export function CreateObjectiveForm({ onConfirmed }: CreateObjectiveFormProps) {
   const [nameError, setNameError] = useState("");
   const [targetError, setTargetError] = useState("");
   const [padrinhoError, setPadrinhoError] = useState("");
-
-  // useEffect(() => {
-  //   if (status === "confirmed") onConfirmed?.();
-  // }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // -----------------------------------------------------------------------
   // Handlers

@@ -6,6 +6,7 @@ import { PadrinhoStatus, VaultStatus } from "@/hooks/useObjective";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
 import { DepositForm } from "@/app/components/DepositForm";
 import { WithdrawalRequestForm } from "@/app/components/WithdrawalRequestForm";
+// import { WithdrawalHistory } from "@/app/components/WithdrawalHistory";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
 // -----------------------------------------------------------------------
@@ -199,6 +200,11 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
           )}
         </div>
       )}
+
+      {/* Withdrawal history — always visible, lazy-loaded on expand */}
+      <div className="mt-4">
+        {/* <WithdrawalHistory vaultAddress={objective.address} /> */}
+      </div>
     </div>
   );
 }

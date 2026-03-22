@@ -1,10 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { CreateObjectiveForm } from "@/app/components/CreateObjectiveForm";
 
 export default function NewObjectivePage() {
-  const router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start px-4 py-12">
@@ -15,7 +13,7 @@ export default function NewObjectivePage() {
         >
           ← Dashboard
         </a>
-        <CreateObjectiveForm onConfirmed={() => router.push("/dashboard")} />
+        <CreateObjectiveForm  />
       </div>
     </main>
   );
