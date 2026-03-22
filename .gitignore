@@ -12,3 +12,8 @@ contract/docs/
 
 # Dotenv file
 contract/.env
+
+/web/.env
+/web/.env.local
+/web/node_modules
+node_modules/
