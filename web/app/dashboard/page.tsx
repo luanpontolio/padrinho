@@ -19,7 +19,8 @@ export default function DashboardPage() {
 
   if (!ready) return <LoadingScreen />;
 
-  if (!authenticated || !address) {
+  // Not logged in → show login CTA
+  if (!authenticated) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
         <h1 className="text-2xl font-bold">Padrinho</h1>
@@ -33,6 +34,10 @@ export default function DashboardPage() {
       </main>
     );
   }
+
+  // Authenticated but wagmi wallet not synced yet → wait
+  if (!address) return <LoadingScreen />;
+
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-lg px-4 py-10 space-y-10">

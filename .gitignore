@@ -16,4 +16,5 @@ contract/.env
 /web/.env
 /web/.env.local
 /web/node_modules
+/web/.next
 node_modules/
