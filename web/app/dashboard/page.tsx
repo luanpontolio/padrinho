@@ -6,56 +6,47 @@ import { usePrivy } from "@privy-io/react-auth";
 import { useAfilhadoDashboard } from "@/hooks/useAfilhadoDashboard";
 import { usePadrinhoDashboard } from "@/hooks/usePadrinhoDashboard";
 import { PadrinhoStatus } from "@/hooks/useObjective";
+import { AppHeader } from "@/app/components/AppHeader";
 import { ObjectiveCard } from "@/app/components/ObjectiveCard";
 import { InviteCard } from "@/app/components/InviteCard";
 
 export default function DashboardPage() {
-  const { ready, authenticated, login, logout } = usePrivy();
+  const { ready, authenticated } = usePrivy();
   const { address } = useAccount();
 
-  if (!ready) return <LoadingScreen />;
-
-  if (!authenticated) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-4">
-        <h1 className="text-2xl font-bold gradient-text" style={{ letterSpacing: "-0.03em" }}>
-          Padrinho
-        </h1>
-        <p className="text-sm" style={{ color: "var(--muted)" }}>
-          Connect your wallet to access your dashboard.
-        </p>
-        <button onClick={login} className="btn-primary">
-          Connect wallet
-        </button>
-      </main>
-    );
-  }
-
-  if (!address) return <LoadingScreen />;
-
   return (
-    <main className="mx-auto min-h-screen w-full max-w-lg px-4 py-10 space-y-10">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-white/40">
-          {address.slice(0, 6)}…{address.slice(-4)}
-        </span>
-        <button
-          onClick={() => logout()}
-          className="btn-ghost px-3 py-1 text-xs"
-        >
-          Disconnect
-        </button>
-      </div>
+    <div className="min-h-screen">
+      <AppHeader />
 
-      <AfilhadoSection />
-      <PadrinhoSection />
-    </main>
+      {/* Loading */}
+      {(!ready || (authenticated && !address)) && (
+        <div className="flex items-center justify-center py-32">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
+        </div>
+      )}
+
+      {/* Not connected — header already has the connect button */}
+      {ready && !authenticated && (
+        <div className="flex flex-col items-center gap-2 py-32 text-center">
+          <p className="text-sm text-white/50">Connect your wallet to access your dashboard.</p>
+        </div>
+      )}
+
+      {/* Authenticated */}
+      {ready && authenticated && address && (
+        <main className="mx-auto w-full max-w-lg px-4 py-10 space-y-10">
+          <AfilhadoSection />
+          <PadrinhoSection />
+        </main>
+      )}
+    </div>
   );
 }
 
 function AfilhadoSection() {
   const { objectives, isLoading, refetch } = useAfilhadoDashboard();
+
+  const isEmpty = !isLoading && objectives.length === 0;
 
   return (
     <section>
@@ -63,13 +54,17 @@ function AfilhadoSection() {
         <h2 className="text-base font-semibold text-white/90" style={{ letterSpacing: "-0.02em" }}>
           My objectives
         </h2>
-        <Link href="/objective/new" className="btn-primary px-4 py-1.5 text-xs">
-          + New
-        </Link>
+        {!isEmpty && (
+          <Link href="/objective/new" className="btn-primary px-4 py-1.5 text-xs">
+            + New
+          </Link>
+        )}
       </div>
 
       {isLoading && <SkeletonList count={2} />}
-      {!isLoading && objectives.length === 0 && <EmptyState />}
+
+      {isEmpty && <EmptyState />}
+
       {!isLoading && objectives.length > 0 && (
         <ul className="space-y-3">
           {objectives.map((obj) => (
@@ -123,19 +118,17 @@ function PadrinhoSection() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-white/10 py-16 text-center">
-      <p className="text-sm text-white/40">No savings objectives yet.</p>
+      <div className="space-y-2">
+        <p className="text-base font-semibold text-white">Set a savings goal</p>
+        <p className="max-w-xs text-sm leading-relaxed text-white/40">
+          Give it a name and a target amount. Deposit at your own pace and track progress toward it.
+          You can invite someone you trust to keep you accountable, or save on your own.
+        </p>
+      </div>
       <Link href="/objective/new" className="btn-primary">
-        Create your first objective
+        Start your first objective
       </Link>
     </div>
-  );
-}
-
-function LoadingScreen() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
-    </main>
   );
 }
 
