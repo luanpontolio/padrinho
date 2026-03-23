@@ -9,10 +9,6 @@ import { WithdrawalRequestForm } from "@/app/components/WithdrawalRequestForm";
 import { CompletionMoment } from "@/app/components/CompletionMoment";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function formatUsdc(raw: bigint): string {
   const dollars = Number(raw) / 1_000_000;
   return dollars.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -20,8 +16,7 @@ function formatUsdc(raw: bigint): string {
 
 function progressPercent(balance: bigint, target: bigint): number {
   if (target === 0n) return 0;
-  const pct = Number((balance * 100n) / target);
-  return Math.min(pct, 100);
+  return Math.min(Number((balance * 100n) / target), 100);
 }
 
 function padrinhoLabel(status: number, padrinho: string, pending: string): string {
@@ -35,10 +30,6 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   if (err.includes("(NETWORK)")) return "NETWORK";
   return "CONTRACT";
 }
-
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
 
 interface ObjectiveCardProps {
   objective: ObjectiveData;
@@ -67,71 +58,78 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
     if (wdStatus === "confirmed") onRefresh?.();
   }, [wdStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Completed objectives render the Completion Moment screen instead of the normal card
   if (isCompleted) {
     return <CompletionMoment objective={objective} />;
   }
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
+    <div className="card space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-base font-semibold">{name}</h3>
-          <p className="mt-0.5 text-xs text-foreground/50">
+          <h3 className="text-sm font-semibold text-white" style={{ letterSpacing: "-0.01em" }}>
+            {name}
+          </h3>
+          <p className="mt-0.5 text-xs text-white/40">
             {padrinhoLabel(padrinhoStatus, padrinho, pendingPadrinho)}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          {goalReached && (
-            <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-              Goal reached
-            </span>
-          )}
-        </div>
+        {goalReached && (
+          <span
+            className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+            style={{ borderColor: "#a9cbff", color: "#a9cbff" }}
+          >
+            Goal reached
+          </span>
+        )}
       </div>
 
       {/* Balance */}
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="text-2xl font-bold">${formatUsdc(totalAssets)}</span>
-        <span className="text-sm text-foreground/50">/ ${formatUsdc(targetAmount)}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-2xl font-bold gradient-text" style={{ letterSpacing: "-0.03em" }}>
+          ${formatUsdc(totalAssets)}
+        </span>
+        <span className="text-sm text-white/40">/ ${formatUsdc(targetAmount)}</span>
       </div>
 
       {/* Progress bar */}
-      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-foreground/10">
-        <div
-          className="h-full rounded-full bg-foreground transition-all duration-300"
-          style={{ width: `${pct}%` }}
-          role="progressbar"
-          aria-valuenow={pct}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        />
+      <div>
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+          <div
+            className="h-full rounded-full gradient-bar transition-all duration-300"
+            style={{ width: `${pct}%` }}
+            role="progressbar"
+            aria-valuenow={pct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          />
+        </div>
+        <p className="mt-1 text-right text-xs text-white/30">{pct}%</p>
       </div>
-      <p className="mt-1 text-right text-xs text-foreground/50">{pct}%</p>
 
-      {/* Pending withdrawal request status (afilhado view) */}
+      {/* Pending withdrawal request */}
       {withdrawalRequest.exists && !isCompleted && (
-        <div className="mt-3 rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2">
-          <p className="text-xs font-medium text-yellow-800">
+        <div
+          className="rounded-xl border px-3 py-2.5"
+          style={{ borderColor: "rgba(255,214,170,0.3)", background: "rgba(255,214,170,0.05)" }}
+        >
+          <p className="text-xs font-medium" style={{ color: "var(--warning)" }}>
             Withdrawal request pending — ${formatUsdc(withdrawalRequest.amount)}
           </p>
-          <p className="mt-0.5 text-xs text-yellow-600">Waiting for padrinho response.</p>
+          <p className="mt-0.5 text-xs text-white/40">Waiting for padrinho response.</p>
         </div>
       )}
 
-      {/* Actions — hidden when completed */}
+      {/* Actions */}
       {!isCompleted && (
-        <div className="mt-4 space-y-3">
-
-          {/* Goal reached → withdraw all */}
+        <div className="space-y-3">
           {goalReached && (
             <div className="space-y-2">
-              <p className="text-xs text-blue-700">Goal reached — full withdrawal available.</p>
+              <p className="text-xs text-white/50">Goal reached — full withdrawal available.</p>
               <button
                 onClick={() => withdrawGoal()}
                 disabled={wdStatus === "signing" || wdStatus === "submitted" || wdStatus === "confirmed"}
-                className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-40"
+                className="btn-primary w-full"
               >
                 Withdraw all
               </button>
@@ -142,26 +140,25 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
                 errorMessage={wdError}
               />
               {wdStatus === "failed" && (
-                <button onClick={wdReset} className="text-xs text-foreground/50 underline hover:text-foreground">
+                <button onClick={wdReset} className="text-xs text-white/40 underline hover:text-white">
                   Try again
                 </button>
               )}
             </div>
           )}
 
-          {/* Below goal actions */}
           {belowGoal && !withdrawalRequest.exists && (
             <div className="flex gap-2">
               <button
                 onClick={() => setPanel(panel === "deposit" ? "none" : "deposit")}
-                className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+                className="btn-ghost flex-1"
               >
                 Deposit
               </button>
               {canRequestWithdrawal && (
                 <button
                   onClick={() => setPanel(panel === "request" ? "none" : "request")}
-                  className="flex-1 rounded-lg border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+                  className="btn-ghost flex-1"
                 >
                   Request withdrawal
                 </button>
@@ -169,12 +166,19 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
             </div>
           )}
 
-          {/* Deposit panel */}
           {panel === "deposit" && (
-            <div className="rounded-lg border border-foreground/10 p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium">Deposit USDC</span>
-                <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.03)" }}
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-medium text-white/70">Deposit USDC</span>
+                <button
+                  onClick={() => setPanel("none")}
+                  className="text-xs text-white/30 hover:text-white"
+                >
+                  ✕
+                </button>
               </div>
               <DepositForm
                 vaultAddress={objective.address}
@@ -183,12 +187,19 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
             </div>
           )}
 
-          {/* Early withdrawal request panel */}
           {panel === "request" && (
-            <div className="rounded-lg border border-foreground/10 p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium">Request early withdrawal</span>
-                <button onClick={() => setPanel("none")} className="text-xs text-foreground/40 hover:text-foreground">✕</button>
+            <div
+              className="rounded-xl border p-4"
+              style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.03)" }}
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-xs font-medium text-white/70">Request early withdrawal</span>
+                <button
+                  onClick={() => setPanel("none")}
+                  className="text-xs text-white/30 hover:text-white"
+                >
+                  ✕
+                </button>
               </div>
               <WithdrawalRequestForm
                 vaultAddress={objective.address}
@@ -200,7 +211,6 @@ export function ObjectiveCard({ objective, onRefresh }: ObjectiveCardProps) {
           )}
         </div>
       )}
-
     </div>
   );
 }

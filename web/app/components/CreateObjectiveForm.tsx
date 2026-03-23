@@ -6,15 +6,6 @@ import { useAccount } from "wagmi";
 import { useCreateObjective } from "@/hooks/useCreateObjective";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function parseUsdc(value: string): bigint | null {
   const n = parseFloat(value);
   if (isNaN(n) || n <= 0) return null;
@@ -27,30 +18,18 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   return "CONTRACT";
 }
 
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
-
 export function CreateObjectiveForm() {
   const { address } = useAccount();
   const { write, status, txHash, error, reset } = useCreateObjective();
 
-  // Step 1 fields
   const [name, setName] = useState("");
   const [targetInput, setTargetInput] = useState("");
-
-  // Step 2 fields
   const [padrinhoInput, setPadrinhoInput] = useState("");
   const [step, setStep] = useState<1 | 2>(1);
 
-  // Validation
   const [nameError, setNameError] = useState("");
   const [targetError, setTargetError] = useState("");
   const [padrinhoError, setPadrinhoError] = useState("");
-
-  // -----------------------------------------------------------------------
-  // Handlers
-  // -----------------------------------------------------------------------
 
   function handleStep1() {
     let valid = true;
@@ -101,27 +80,28 @@ export function CreateObjectiveForm() {
     setStep(1);
   }
 
-  // -----------------------------------------------------------------------
-  // Render
-  // -----------------------------------------------------------------------
-
   const isSubmitting = status === "signing" || status === "submitted";
 
   return (
     <div className="w-full max-w-md">
       {/* Step indicator */}
-      <div className="mb-6 flex items-center gap-2 text-xs text-foreground/50">
+      <div className="mb-8 flex items-center gap-2">
         <StepDot active={step === 1} done={step === 2} label="1" />
-        <div className="h-px flex-1 bg-foreground/10" />
+        <div className="h-px flex-1 bg-white/10" />
         <StepDot active={step === 2} done={false} label="2" />
       </div>
 
       {step === 1 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">New savings objective</h2>
+        <div className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+              New savings objective
+            </h2>
+            <p className="mt-1 text-sm text-white/40">Define your goal and target amount.</p>
+          </div>
 
           <div>
-            <label htmlFor="obj-name" className="mb-1 block text-sm font-medium">
+            <label htmlFor="obj-name" className="mb-2 block text-sm font-medium text-white/70">
               Objective name
             </label>
             <input
@@ -130,13 +110,13 @@ export function CreateObjectiveForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Trip to Japan"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="input-field"
             />
-            {nameError && <p className="mt-1 text-xs text-red-600">{nameError}</p>}
+            {nameError && <p className="mt-1.5 text-xs" style={{ color: "var(--alert)" }}>{nameError}</p>}
           </div>
 
           <div>
-            <label htmlFor="obj-target" className="mb-1 block text-sm font-medium">
+            <label htmlFor="obj-target" className="mb-2 block text-sm font-medium text-white/70">
               Target amount (USDC)
             </label>
             <input
@@ -147,30 +127,31 @@ export function CreateObjectiveForm() {
               value={targetInput}
               onChange={(e) => setTargetInput(e.target.value)}
               placeholder="e.g. 1000"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="input-field"
             />
-            {targetError && <p className="mt-1 text-xs text-red-600">{targetError}</p>}
+            {targetError && <p className="mt-1.5 text-xs" style={{ color: "var(--alert)" }}>{targetError}</p>}
           </div>
 
-          <button
-            onClick={handleStep1}
-            className="w-full rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 active:opacity-80"
-          >
+          <button onClick={handleStep1} className="btn-primary w-full">
             Continue →
           </button>
         </div>
       )}
 
       {step === 2 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Choose a padrinho (optional)</h2>
-          <p className="text-sm text-foreground/60">
-            A padrinho can block early withdrawals below your goal. Leave blank to save solo.
-          </p>
+        <div className="space-y-5">
+          <div>
+            <h2 className="text-lg font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+              Choose a padrinho
+            </h2>
+            <p className="mt-1 text-sm text-white/40">
+              A padrinho can block early withdrawals. Leave blank to save solo.
+            </p>
+          </div>
 
           <div>
-            <label htmlFor="padrinho-addr" className="mb-1 block text-sm font-medium">
-              Padrinho address
+            <label htmlFor="padrinho-addr" className="mb-2 block text-sm font-medium text-white/70">
+              Padrinho address <span className="text-white/30">(optional)</span>
             </label>
             <input
               id="padrinho-addr"
@@ -178,23 +159,25 @@ export function CreateObjectiveForm() {
               value={padrinhoInput}
               onChange={(e) => setPadrinhoInput(e.target.value)}
               placeholder="0x… or leave blank for solo mode"
-              className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 font-mono text-sm outline-none focus:ring-2 focus:ring-foreground/30"
+              className="input-field font-mono"
             />
-            {padrinhoError && <p className="mt-1 text-xs text-red-600">{padrinhoError}</p>}
+            {padrinhoError && (
+              <p className="mt-1.5 text-xs" style={{ color: "var(--alert)" }}>{padrinhoError}</p>
+            )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <button
               onClick={handleBack}
               disabled={isSubmitting}
-              className="flex-1 rounded-lg border border-foreground/20 px-4 py-2 text-sm font-medium hover:bg-foreground/5 disabled:opacity-40"
+              className="btn-ghost flex-1 disabled:opacity-40"
             >
               ← Back
             </button>
             <button
               onClick={handleSubmit}
               disabled={isSubmitting || status === "confirmed"}
-              className="flex-1 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 active:opacity-80 disabled:opacity-40"
+              className="btn-primary flex-1 disabled:opacity-40"
             >
               {padrinhoInput.trim() ? "Create with padrinho" : "Create (solo)"}
             </button>
@@ -212,22 +195,35 @@ export function CreateObjectiveForm() {
   );
 }
 
-// -----------------------------------------------------------------------
-// Step indicator dot
-// -----------------------------------------------------------------------
-
 function StepDot({ active, done, label }: { active: boolean; done: boolean; label: string }) {
+  if (done) {
+    return (
+      <div
+        className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium text-black"
+        style={{ background: "var(--success)" }}
+      >
+        ✓
+      </div>
+    );
+  }
+
+  if (active) {
+    return (
+      <div
+        className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium text-black"
+        style={{ background: "linear-gradient(135deg, #e2c9ff, #8cffdd)" }}
+      >
+        {label}
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
-        active
-          ? "bg-foreground text-background"
-          : done
-            ? "bg-green-500 text-white"
-            : "border border-foreground/20 text-foreground/40"
-      }`}
+      className="flex h-6 w-6 items-center justify-center rounded-full border text-xs font-medium text-white/30"
+      style={{ borderColor: "var(--border)" }}
     >
-      {done ? "✓" : label}
+      {label}
     </div>
   );
 }

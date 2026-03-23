@@ -11,6 +11,13 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        surface: "var(--surface)",
+        muted: "var(--muted)",
+        success: "var(--success)",
+        alert: "var(--alert)",
+      },
+      borderColor: {
+        DEFAULT: "var(--border)",
       },
     },
   },

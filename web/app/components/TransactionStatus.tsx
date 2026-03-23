@@ -2,58 +2,39 @@
 
 import { monadTestnet } from "@/lib/wagmi";
 
-// -----------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------
-
 export type TxStatus = "idle" | "signing" | "submitted" | "confirmed" | "failed";
 
 export interface TransactionStatusProps {
   status: TxStatus;
   txHash?: `0x${string}`;
-  /** USER | NETWORK | CONTRACT */
   errorCategory?: "USER" | "NETWORK" | "CONTRACT";
   errorMessage?: string;
 }
-
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
 
 function explorerUrl(hash: `0x${string}`) {
   const base = monadTestnet.blockExplorers.default.url;
   return `${base}/tx/${hash}`;
 }
 
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
-
-/**
- * Renders the four transaction lifecycle states required by the Padrinho Constitution (III):
- *   signing → submitted (+ explorer link) → confirmed → failed
- *
- * Renders nothing in "idle" state.
- */
-export function TransactionStatus({
-  status,
-  txHash,
-  errorCategory,
-  errorMessage,
-}: TransactionStatusProps) {
+export function TransactionStatus({ status, txHash, errorCategory, errorMessage }: TransactionStatusProps) {
   if (status === "idle") return null;
 
   return (
-    <div className="mt-3 rounded-lg border px-4 py-3 text-sm" role="status" aria-live="polite">
+    <div
+      className="mt-3 rounded-xl border px-4 py-3 text-sm"
+      style={{ borderColor: "var(--border)", background: "rgba(255,255,255,0.03)" }}
+      role="status"
+      aria-live="polite"
+    >
       {status === "signing" && (
-        <div className="flex items-center gap-2 text-yellow-700">
+        <div className="flex items-center gap-2 text-white/60">
           <Spinner />
           <span>Awaiting wallet signature…</span>
         </div>
       )}
 
       {status === "submitted" && (
-        <div className="flex items-center gap-2 text-blue-700">
+        <div className="flex items-center gap-2 text-white/60">
           <Spinner />
           <span>
             Transaction submitted.{" "}
@@ -62,7 +43,7 @@ export function TransactionStatus({
                 href={explorerUrl(txHash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline"
+                className="text-white/80 underline hover:text-white"
               >
                 View on explorer ↗
               </a>
@@ -72,7 +53,7 @@ export function TransactionStatus({
       )}
 
       {status === "confirmed" && (
-        <div className="flex items-center gap-2 text-green-700">
+        <div className="flex items-center gap-2" style={{ color: "var(--success)" }}>
           <span>✓</span>
           <span>
             Confirmed.{" "}
@@ -81,7 +62,7 @@ export function TransactionStatus({
                 href={explorerUrl(txHash)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline"
+                className="underline opacity-70 hover:opacity-100"
               >
                 View on explorer ↗
               </a>
@@ -91,19 +72,24 @@ export function TransactionStatus({
       )}
 
       {status === "failed" && (
-        <div className="text-red-700">
+        <div style={{ color: "var(--alert)" }}>
           <div className="flex items-center gap-2">
             <span>✕</span>
             <span>
               Transaction failed
               {errorCategory && (
-                <span className="ml-1 rounded bg-red-100 px-1 text-xs font-mono">
+                <span
+                  className="ml-1.5 rounded-md px-1.5 py-0.5 text-xs font-mono"
+                  style={{ background: "rgba(255,107,107,0.15)", color: "var(--alert)" }}
+                >
                   {errorCategory}
                 </span>
               )}
             </span>
           </div>
-          {errorMessage && <p className="mt-1 text-xs text-red-600">{errorMessage}</p>}
+          {errorMessage && (
+            <p className="mt-1 text-xs text-white/40">{errorMessage}</p>
+          )}
         </div>
       )}
     </div>

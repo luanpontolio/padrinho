@@ -9,46 +9,40 @@ import { PadrinhoStatus } from "@/hooks/useObjective";
 import { ObjectiveCard } from "@/app/components/ObjectiveCard";
 import { InviteCard } from "@/app/components/InviteCard";
 
-// -----------------------------------------------------------------------
-// Dashboard page — role-aware
-// -----------------------------------------------------------------------
-
 export default function DashboardPage() {
   const { ready, authenticated, login, logout } = usePrivy();
   const { address } = useAccount();
 
   if (!ready) return <LoadingScreen />;
 
-  // Not logged in → show login CTA
   if (!authenticated) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4">
-        <h1 className="text-2xl font-bold">Padrinho</h1>
-        <p className="text-sm text-foreground/60">Connect your wallet to access your dashboard.</p>
-        <button
-          onClick={login}
-          className="rounded-lg bg-foreground px-6 py-2 text-sm font-medium text-background hover:opacity-90"
-        >
+      <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-4">
+        <h1 className="text-2xl font-bold gradient-text" style={{ letterSpacing: "-0.03em" }}>
+          Padrinho
+        </h1>
+        <p className="text-sm" style={{ color: "var(--muted)" }}>
+          Connect your wallet to access your dashboard.
+        </p>
+        <button onClick={login} className="btn-primary">
           Connect wallet
         </button>
       </main>
     );
   }
 
-  // Authenticated but wagmi wallet not synced yet → wait
   if (!address) return <LoadingScreen />;
-
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-lg px-4 py-10 space-y-10">
       {/* Top bar */}
       <div className="flex items-center justify-between">
-        <span className="font-mono text-xs text-foreground/50">
+        <span className="font-mono text-xs text-white/40">
           {address.slice(0, 6)}…{address.slice(-4)}
         </span>
         <button
           onClick={() => logout()}
-          className="rounded-lg border border-foreground/20 px-3 py-1 text-xs font-medium text-foreground/60 hover:border-foreground/40 hover:text-foreground"
+          className="btn-ghost px-3 py-1 text-xs"
         >
           Disconnect
         </button>
@@ -60,31 +54,24 @@ export default function DashboardPage() {
   );
 }
 
-// -----------------------------------------------------------------------
-// Afilhado section
-// -----------------------------------------------------------------------
-
 function AfilhadoSection() {
   const { objectives, isLoading, refetch } = useAfilhadoDashboard();
 
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">My objectives</h2>
-        <Link
-          href="/objective/new"
-          className="rounded-lg bg-foreground px-4 py-1.5 text-sm font-medium text-background hover:opacity-90"
-        >
+        <h2 className="text-base font-semibold text-white/90" style={{ letterSpacing: "-0.02em" }}>
+          My objectives
+        </h2>
+        <Link href="/objective/new" className="btn-primary px-4 py-1.5 text-xs">
           + New
         </Link>
       </div>
 
       {isLoading && <SkeletonList count={2} />}
-
       {!isLoading && objectives.length === 0 && <EmptyState />}
-
       {!isLoading && objectives.length > 0 && (
-        <ul className="space-y-4">
+        <ul className="space-y-3">
           {objectives.map((obj) => (
             <li key={obj.address}>
               <ObjectiveCard objective={obj} onRefresh={refetch} />
@@ -96,28 +83,27 @@ function AfilhadoSection() {
   );
 }
 
-// -----------------------------------------------------------------------
-// Padrinho section
-// -----------------------------------------------------------------------
-
 function PadrinhoSection() {
   const { objectives, isLoading, refetch } = usePadrinhoDashboard();
 
-  // Hide section entirely if nothing to show and not loading
   if (!isLoading && objectives.length === 0) return null;
 
-  // Separate pending invites from active ones
   const pending = objectives.filter((o) => o.padrinhoStatus === PadrinhoStatus.Pending);
   const active = objectives.filter((o) => o.padrinhoStatus === PadrinhoStatus.Active);
 
   return (
     <section>
-      <h2 className="mb-4 text-lg font-bold">As padrinho</h2>
+      <h2
+        className="mb-4 text-base font-semibold text-white/90"
+        style={{ letterSpacing: "-0.02em" }}
+      >
+        As padrinho
+      </h2>
 
       {isLoading && <SkeletonList count={1} />}
 
       {!isLoading && (
-        <ul className="space-y-4">
+        <ul className="space-y-3">
           {pending.map((obj) => (
             <li key={obj.address}>
               <InviteCard objective={obj} onAccepted={refetch} onResolved={refetch} />
@@ -134,18 +120,11 @@ function PadrinhoSection() {
   );
 }
 
-// -----------------------------------------------------------------------
-// Shared UI
-// -----------------------------------------------------------------------
-
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-foreground/20 py-16 text-center">
-      <p className="text-sm text-foreground/50">You have no savings objectives yet.</p>
-      <Link
-        href="/objective/new"
-        className="rounded-lg bg-foreground px-5 py-2 text-sm font-medium text-background hover:opacity-90"
-      >
+    <div className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-white/10 py-16 text-center">
+      <p className="text-sm text-white/40">No savings objectives yet.</p>
+      <Link href="/objective/new" className="btn-primary">
         Create your first objective
       </Link>
     </div>
@@ -155,14 +134,14 @@ function EmptyState() {
 function LoadingScreen() {
   return (
     <main className="flex min-h-screen items-center justify-center">
-      <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground border-t-transparent" />
+      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/80" />
     </main>
   );
 }
 
 function SkeletonList({ count }: { count: number }) {
   return (
-    <ul className="space-y-4" aria-busy="true">
+    <ul className="space-y-3" aria-busy="true">
       {Array.from({ length: count }).map((_, i) => (
         <li key={i}>
           <ObjectiveCardSkeleton />
@@ -174,31 +153,21 @@ function SkeletonList({ count }: { count: number }) {
 
 function ObjectiveCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm">
-      {/* Header */}
+    <div className="card space-y-4">
       <div className="flex items-start justify-between gap-2">
-        <div className="space-y-1.5">
-          <div className="h-4 w-40 animate-pulse rounded bg-foreground/20" />
-          <div className="h-3 w-28 animate-pulse rounded bg-foreground/20" />
+        <div className="space-y-2">
+          <div className="h-4 w-40 animate-pulse rounded-full bg-white/10" />
+          <div className="h-3 w-28 animate-pulse rounded-full bg-white/10" />
         </div>
       </div>
-
-      {/* Balance row */}
-      <div className="mt-4 flex items-baseline gap-2">
-        <div className="h-7 w-28 animate-pulse rounded-lg bg-foreground/20" />
-        <div className="h-4 w-20 animate-pulse rounded bg-foreground/20" />
+      <div className="flex items-baseline gap-2">
+        <div className="h-7 w-28 animate-pulse rounded-lg bg-white/10" />
+        <div className="h-4 w-20 animate-pulse rounded-lg bg-white/10" />
       </div>
-
-      {/* Progress bar */}
-      <div className="mt-2 h-2 w-full animate-pulse rounded-full bg-foreground/20" />
-      <div className="mt-1 flex justify-end">
-        <div className="h-3 w-8 animate-pulse rounded bg-foreground/20" />
-      </div>
-
-      {/* Action buttons */}
-      <div className="mt-4 flex gap-2">
-        <div className="h-9 flex-1 animate-pulse rounded-lg bg-foreground/20" />
-        <div className="h-9 flex-1 animate-pulse rounded-lg bg-foreground/20" />
+      <div className="h-1.5 w-full animate-pulse rounded-full bg-white/10" />
+      <div className="flex gap-2">
+        <div className="h-9 flex-1 animate-pulse rounded-full bg-white/10" />
+        <div className="h-9 flex-1 animate-pulse rounded-full bg-white/10" />
       </div>
     </div>
   );

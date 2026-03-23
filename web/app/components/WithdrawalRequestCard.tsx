@@ -5,10 +5,6 @@ import type { ObjectiveData } from "@/hooks/useObjective";
 import { usePadrinhoActions } from "@/hooks/usePadrinhoActions";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function formatUsdc(raw: bigint): string {
   return (Number(raw) / 1_000_000).toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -26,18 +22,10 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   return "CONTRACT";
 }
 
-// -----------------------------------------------------------------------
-// Props
-// -----------------------------------------------------------------------
-
 interface WithdrawalRequestCardProps {
   objective: ObjectiveData;
   onResolved?: () => void;
 }
-
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
 
 export function WithdrawalRequestCard({ objective, onResolved }: WithdrawalRequestCardProps) {
   const { approveWithdrawal, denyWithdrawal, status, txHash, error, reset } =
@@ -72,28 +60,33 @@ export function WithdrawalRequestCard({ objective, onResolved }: WithdrawalReque
   }
 
   return (
-    <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 space-y-3">
+    <div
+      className="rounded-xl border p-4 space-y-3"
+      style={{ borderColor: "rgba(255,214,170,0.2)", background: "rgba(255,214,170,0.04)" }}
+    >
       {/* Request summary */}
       <div>
-        <p className="text-xs font-semibold text-yellow-900">
+        <p className="text-xs font-semibold" style={{ color: "var(--warning)" }}>
           Withdrawal request — ${formatUsdc(req.amount)}
         </p>
-        <p className="mt-0.5 text-xs text-yellow-700">
+        <p className="mt-0.5 text-xs text-white/40">
           From: {shortAddr(objective.afilhado)} · {objective.name}
         </p>
         {req.message && (
-          <p className="mt-2 rounded bg-yellow-100 px-2 py-1.5 text-xs text-yellow-800 italic">
+          <p
+            className="mt-2 rounded-lg px-3 py-2 text-xs italic text-white/60"
+            style={{ background: "rgba(255,255,255,0.05)" }}
+          >
             &ldquo;{req.message}&rdquo;
           </p>
         )}
       </div>
 
-      {/* Reply field */}
       {status !== "confirmed" && (
         <>
           <div>
-            <label className="mb-1 block text-xs font-medium text-yellow-900">
-              Reply <span className="text-yellow-600">(required to deny)</span>
+            <label className="mb-1.5 block text-xs font-medium text-white/50">
+              Reply <span className="text-white/30">(required to deny)</span>
             </label>
             <textarea
               value={reply}
@@ -101,23 +94,28 @@ export function WithdrawalRequestCard({ objective, onResolved }: WithdrawalReque
               disabled={isBusy}
               placeholder="Your response to the afilhado…"
               rows={2}
-              className="w-full rounded-lg border border-yellow-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-yellow-400 disabled:opacity-50 resize-none"
+              className="w-full resize-none rounded-xl border bg-white/5 px-3 py-2 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/20 disabled:opacity-50"
+              style={{ borderColor: "var(--border)" }}
             />
-            {replyError && <p className="mt-1 text-xs text-red-600">{replyError}</p>}
+            {replyError && (
+              <p className="mt-1 text-xs" style={{ color: "var(--alert)" }}>{replyError}</p>
+            )}
           </div>
 
           <div className="flex gap-2">
             <button
               onClick={handleApprove}
               disabled={isBusy}
-              className="flex-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-40"
+              className="flex-1 rounded-full px-3 py-2 text-xs font-medium text-black transition-opacity hover:opacity-90 disabled:opacity-40"
+              style={{ background: "var(--success)" }}
             >
               {action === "approve" && isBusy ? "Approving…" : "Approve"}
             </button>
             <button
               onClick={handleDeny}
               disabled={isBusy}
-              className="flex-1 rounded-lg bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-40"
+              className="flex-1 rounded-full border px-3 py-2 text-xs font-medium transition-colors hover:border-white/20 disabled:opacity-40"
+              style={{ borderColor: "rgba(255,107,107,0.4)", color: "var(--alert)" }}
             >
               {action === "deny" && isBusy ? "Denying…" : "Deny"}
             </button>
@@ -133,7 +131,7 @@ export function WithdrawalRequestCard({ objective, onResolved }: WithdrawalReque
       />
 
       {status === "failed" && (
-        <button onClick={reset} className="text-xs text-yellow-700 underline hover:text-yellow-900">
+        <button onClick={reset} className="text-xs text-white/40 underline hover:text-white">
           Try again
         </button>
       )}

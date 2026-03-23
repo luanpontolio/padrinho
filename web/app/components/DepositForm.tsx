@@ -4,10 +4,6 @@ import { useState, useEffect } from "react";
 import { useDeposit } from "@/hooks/useDeposit";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function formatUsdc(raw: bigint): string {
   return (Number(raw) / 1_000_000).toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -27,18 +23,10 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   return "CONTRACT";
 }
 
-// -----------------------------------------------------------------------
-// Props
-// -----------------------------------------------------------------------
-
 interface DepositFormProps {
   vaultAddress: `0x${string}`;
   onSuccess?: () => void;
 }
-
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
 
 export function DepositForm({ vaultAddress, onSuccess }: DepositFormProps) {
   const { usdcBalance, deposit, step, status, approveTxHash, depositTxHash, error, reset } =
@@ -73,20 +61,20 @@ export function DepositForm({ vaultAddress, onSuccess }: DepositFormProps) {
     setInputError("");
   }
 
-  // Step label shown during the 2-step flow
-  const stepLabel = step === "approving"
-    ? "Step 1/2 — Approving USDC…"
-    : step === "depositing"
-      ? "Step 2/2 — Depositing…"
-      : null;
+  const stepLabel =
+    step === "approving"
+      ? "Step 1/2 — Approving USDC…"
+      : step === "depositing"
+        ? "Step 2/2 — Depositing…"
+        : null;
 
   const activeTxHash = step === "approving" ? approveTxHash : depositTxHash;
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between text-xs text-foreground/50">
+      <div className="flex items-center justify-between text-xs text-white/40">
         <span>Your balance</span>
-        <span className="font-mono">${formatUsdc(usdcBalance)} USDC</span>
+        <span className="font-mono text-white/60">${formatUsdc(usdcBalance)} USDC</span>
       </div>
 
       <div>
@@ -99,21 +87,21 @@ export function DepositForm({ vaultAddress, onSuccess }: DepositFormProps) {
             onChange={(e) => setInput(e.target.value)}
             disabled={isActive || step === "done"}
             placeholder="Amount in USDC"
-            className="flex-1 rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30 disabled:opacity-50"
+            className="input-field flex-1 disabled:opacity-50"
           />
           <button
             onClick={handleDeposit}
             disabled={isActive || step === "done"}
-            className="rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
+            className="btn-primary disabled:opacity-40"
           >
             Deposit
           </button>
         </div>
-        {inputError && <p className="mt-1 text-xs text-red-600">{inputError}</p>}
+        {inputError && <p className="mt-1.5 text-xs" style={{ color: "var(--alert)" }}>{inputError}</p>}
       </div>
 
       {stepLabel && (
-        <p className="text-xs font-medium text-foreground/60">{stepLabel}</p>
+        <p className="text-xs text-white/50">{stepLabel}</p>
       )}
 
       <TransactionStatus
@@ -124,10 +112,7 @@ export function DepositForm({ vaultAddress, onSuccess }: DepositFormProps) {
       />
 
       {(step === "done" || step === "failed") && (
-        <button
-          onClick={handleReset}
-          className="text-xs text-foreground/50 underline hover:text-foreground"
-        >
+        <button onClick={handleReset} className="text-xs text-white/40 underline hover:text-white">
           {step === "done" ? "Deposit again" : "Try again"}
         </button>
       )}

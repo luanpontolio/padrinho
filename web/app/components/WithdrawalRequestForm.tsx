@@ -4,10 +4,6 @@ import { useState, useEffect } from "react";
 import { useWithdrawalRequest } from "@/hooks/useWithdrawalRequest";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function parseUsdc(value: string): bigint | null {
   const n = parseFloat(value);
   if (isNaN(n) || n <= 0) return null;
@@ -27,20 +23,12 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   return "CONTRACT";
 }
 
-// -----------------------------------------------------------------------
-// Props
-// -----------------------------------------------------------------------
-
 interface WithdrawalRequestFormProps {
   vaultAddress: `0x${string}`;
   maxAmount: bigint;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
-
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
 
 export function WithdrawalRequestForm({
   vaultAddress,
@@ -84,8 +72,8 @@ export function WithdrawalRequestForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="mb-1 block text-xs font-medium">
-          Amount (max ${formatUsdc(maxAmount)})
+        <label className="mb-1.5 block text-xs font-medium text-white/50">
+          Amount <span className="text-white/30">(max ${formatUsdc(maxAmount)})</span>
         </label>
         <input
           type="number"
@@ -95,14 +83,16 @@ export function WithdrawalRequestForm({
           onChange={(e) => setAmountInput(e.target.value)}
           disabled={isBusy || status === "confirmed"}
           placeholder="USDC amount"
-          className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30 disabled:opacity-50"
+          className="input-field disabled:opacity-50"
         />
-        {amountError && <p className="mt-1 text-xs text-red-600">{amountError}</p>}
+        {amountError && (
+          <p className="mt-1.5 text-xs" style={{ color: "var(--alert)" }}>{amountError}</p>
+        )}
       </div>
 
       <div>
-        <label className="mb-1 block text-xs font-medium">
-          Message to padrinho <span className="text-foreground/40">(optional)</span>
+        <label className="mb-1.5 block text-xs font-medium text-white/50">
+          Message to padrinho <span className="text-white/30">(optional)</span>
         </label>
         <textarea
           value={message}
@@ -110,7 +100,8 @@ export function WithdrawalRequestForm({
           disabled={isBusy || status === "confirmed"}
           placeholder="Explain why you need this withdrawal…"
           rows={2}
-          className="w-full rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-foreground/30 disabled:opacity-50 resize-none"
+          className="w-full resize-none rounded-xl border bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/30 disabled:opacity-50"
+          style={{ borderColor: "var(--border)" }}
         />
       </div>
 
@@ -119,7 +110,7 @@ export function WithdrawalRequestForm({
           <button
             onClick={onCancel}
             disabled={isBusy}
-            className="flex-1 rounded-lg border border-foreground/20 px-4 py-2 text-sm font-medium hover:bg-foreground/5 disabled:opacity-40"
+            className="btn-ghost flex-1 disabled:opacity-40"
           >
             Cancel
           </button>
@@ -127,7 +118,7 @@ export function WithdrawalRequestForm({
         <button
           onClick={handleSubmit}
           disabled={isBusy || status === "confirmed"}
-          className="flex-1 rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
+          className="btn-primary flex-1 disabled:opacity-40"
         >
           Submit request
         </button>
@@ -140,8 +131,8 @@ export function WithdrawalRequestForm({
         errorMessage={error}
       />
 
-      {(status === "failed") && (
-        <button onClick={handleReset} className="text-xs text-foreground/50 underline hover:text-foreground">
+      {status === "failed" && (
+        <button onClick={handleReset} className="text-xs text-white/40 underline hover:text-white">
           Try again
         </button>
       )}

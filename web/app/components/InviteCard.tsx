@@ -7,10 +7,6 @@ import { usePadrinhoActions } from "@/hooks/usePadrinhoActions";
 import { WithdrawalRequestCard } from "@/app/components/WithdrawalRequestCard";
 import { TransactionStatus } from "@/app/components/TransactionStatus";
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
 function formatUsdc(raw: bigint): string {
   return (Number(raw) / 1_000_000).toLocaleString("en-US", {
     minimumFractionDigits: 2,
@@ -27,10 +23,6 @@ function errorCategory(err: string): "USER" | "NETWORK" | "CONTRACT" {
   if (err.includes("(NETWORK)")) return "NETWORK";
   return "CONTRACT";
 }
-
-// -----------------------------------------------------------------------
-// Component
-// -----------------------------------------------------------------------
 
 interface InviteCardProps {
   objective: ObjectiveData;
@@ -50,51 +42,67 @@ export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProp
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="rounded-2xl border border-foreground/10 bg-background p-5 shadow-sm space-y-4">
+    <div className="card space-y-4">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="text-base font-semibold">{objective.name}</h3>
-          <p className="mt-0.5 text-xs text-foreground/50">
+          <h3 className="text-sm font-semibold text-white" style={{ letterSpacing: "-0.01em" }}>
+            {objective.name}
+          </h3>
+          <p className="mt-0.5 text-xs text-white/40">
             Afilhado: {shortAddr(objective.afilhado)}
           </p>
         </div>
-        {isPending && (
-          <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-            Invite pending
-          </span>
-        )}
-        {isActive && !hasRequest && (
-          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-            Active padrinho
-          </span>
-        )}
-        {hasRequest && (
-          <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
-            Action needed
-          </span>
-        )}
+        <div>
+          {isPending && (
+            <span
+              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              style={{ borderColor: "rgba(255,214,170,0.6)", color: "var(--warning)" }}
+            >
+              Invite pending
+            </span>
+          )}
+          {isActive && !hasRequest && (
+            <span
+              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              style={{ borderColor: "rgba(140,255,221,0.5)", color: "var(--success)" }}
+            >
+              Active
+            </span>
+          )}
+          {hasRequest && (
+            <span
+              className="rounded-full border px-2.5 py-0.5 text-xs font-medium"
+              style={{ borderColor: "rgba(226,201,255,0.5)", color: "#e2c9ff" }}
+            >
+              Action needed
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Objective summary */}
-      <div className="grid grid-cols-2 gap-2 rounded-lg bg-foreground/5 p-3 text-sm">
+      {/* Summary */}
+      <div
+        className="grid grid-cols-2 gap-3 rounded-xl p-3 text-sm"
+        style={{ background: "rgba(255,255,255,0.04)" }}
+      >
         <div>
-          <p className="text-xs text-foreground/50">Balance</p>
-          <p className="font-mono font-medium">${formatUsdc(objective.totalAssets)}</p>
+          <p className="text-xs text-white/40">Balance</p>
+          <p className="font-mono font-medium text-white">${formatUsdc(objective.totalAssets)}</p>
         </div>
         <div>
-          <p className="text-xs text-foreground/50">Target</p>
-          <p className="font-mono font-medium">${formatUsdc(objective.targetAmount)}</p>
+          <p className="text-xs text-white/40">Target</p>
+          <p className="font-mono font-medium text-white">${formatUsdc(objective.targetAmount)}</p>
         </div>
       </div>
 
-      {/* Accept CTA — only when pending */}
+      {/* Accept CTA */}
       {isPending && status !== "confirmed" && (
         <div className="space-y-2">
           <button
             onClick={() => acceptInvite()}
             disabled={status === "signing" || status === "submitted"}
-            className="w-full rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-40"
+            className="btn-primary w-full disabled:opacity-40"
           >
             Accept invitation
           </button>
@@ -105,17 +113,14 @@ export function InviteCard({ objective, onAccepted, onResolved }: InviteCardProp
             errorMessage={error}
           />
           {status === "failed" && (
-            <button onClick={reset} className="text-xs text-foreground/50 underline hover:text-foreground">
+            <button onClick={reset} className="text-xs text-white/40 underline hover:text-white">
               Try again
             </button>
           )}
         </div>
       )}
 
-      {/* Withdrawal request card — padrinho action when request exists */}
-      {hasRequest && (
-        <WithdrawalRequestCard objective={objective} onResolved={onResolved} />
-      )}
+      {hasRequest && <WithdrawalRequestCard objective={objective} onResolved={onResolved} />}
     </div>
   );
 }
